@@ -132,26 +132,47 @@ function sidebarToString(sidebar, indent = '      ') {
 // ============================================================
 function updateConfig(blogSidebar, ebookSidebar) {
   let content = fs.readFileSync(configPath, 'utf-8')
+  const lines = content.split('\n')
+
+  // 找到 sidebar: 所在行
+  let sidebarLine = -1
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(/^\s*sidebar:\s*\{/)) {
+      sidebarLine = i
+      break
+    }
+  }
+
+  // 找到 search: 所在行（sidebar 结束标记之后）
+  let searchLine = -1
+  for (let i = sidebarLine + 1; i < lines.length; i++) {
+    if (lines[i].match(/^\s+search:\s*\{/)) {
+      searchLine = i
+      break
+    }
+  }
+
+  if (sidebarLine === -1 || searchLine === -1) {
+    throw new Error(`无法定位 sidebar 或 search 配置 (sidebar: line ${sidebarLine}, search: line ${searchLine})`)
+  }
 
   const blogStr = sidebarToString(blogSidebar)
   const ebookStr = sidebarToString(ebookSidebar)
 
-  const newSidebar = `sidebar: {
-    '/blog/': [
+  const newSidebarBlock = `    sidebar: {
+      '/blog/': [
 ${blogStr}
-    ],
-    '/llm-for-everyone/': [
+      ],
+      '/llm-for-everyone/': [
 ${ebookStr}
-    ],
-  },`
+      ],
+    },
+`
 
-  // 替换 sidebar: 到行尾（包括注释）的整个部分
-  content = content.replace(
-    /sidebar:\s*\{[^}]*\}[^\n]*/,
-    newSidebar,
-  )
+  // 替换 sidebar: 到 search: 之前的所有行
+  lines.splice(sidebarLine, searchLine - sidebarLine, newSidebarBlock.trimEnd())
 
-  fs.writeFileSync(configPath, content, 'utf-8')
+  fs.writeFileSync(configPath, lines.join('\n'), 'utf-8')
 }
 
 // ============================================================

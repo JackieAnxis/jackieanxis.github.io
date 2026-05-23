@@ -33,7 +33,7 @@ export default defineConfig({
     ],
 
     sidebar: {
-    '/blog/': [
+      '/blog/': [
       {
         text: '2022',
         items: [
@@ -101,8 +101,8 @@ export default defineConfig({
           { text: '读《一道JS面试题引发的思考》', link: '/blog/posts/2016/2016-11-30 读《一道JS面试题引发的思考》笔记和思考' },
         ],
       },
-    ],
-    '/llm-for-everyone/': [
+      ],
+      '/llm-for-everyone/': [
       {
         text: '神经网络基础',
         items: [
@@ -155,9 +155,8 @@ export default defineConfig({
           { text: 'Self-Attention 是什么', link: '/llm-for-everyone/references/self-attention' },
         ],
       },
-    ],
-  },
-
+      ],
+    },
     search: {
       provider: 'local',
     },

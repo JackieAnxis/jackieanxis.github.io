@@ -3,7 +3,7 @@ import { katex as katexPlugin } from '@mdit/plugin-katex'
 
 export default defineConfig({
   lang: 'zh-CN',
-  title: '潘嘉铖',
+  title: '',
   description: '智能体算法工程师 / 数据智能体 / 数据可视化',
   base: '/',
   cleanUrls: true,

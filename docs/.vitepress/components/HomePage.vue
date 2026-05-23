@@ -17,7 +17,7 @@
 
 <style scoped>
 .home-layout {
-  padding: 24px;
+  padding: 0;
   max-width: 1000px;
   margin: 0 auto;
   height: calc(100vh - 64px);
@@ -59,7 +59,7 @@
 
 @media (max-width: 768px) {
   .home-layout {
-    padding: 16px;
+    padding: 0;
     height: auto;
   }
 

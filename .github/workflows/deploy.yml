@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: 生成博客首页
-        run: node scripts/generate-blog-info.js
+        run: node scripts/auto-sidebar-generate.js
 
       - name: 构建 VitePress
         run: npm run docs:build

@@ -18,7 +18,7 @@
 <style scoped>
 .home-layout {
   padding: 0;
-  max-width: 1000px;
+  max-width: 1080px;
   margin: 0 auto;
   height: calc(100vh - 64px);
   overflow: hidden;

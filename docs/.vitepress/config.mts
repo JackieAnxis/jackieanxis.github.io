@@ -3,10 +3,14 @@ import { katex as katexPlugin } from '@mdit/plugin-katex'
 
 export default defineConfig({
   lang: 'zh-CN',
-  title: '',
+  title: "Jiacheng's Site",
   description: '智能体算法工程师 / 数据智能体 / 数据可视化',
   base: '/',
   cleanUrls: true,
+
+  head: [
+    ['link', { rel: 'icon', type: 'image/jpeg', href: '/assets/avatar.jpeg' }],
+  ],
 
   markdown: {
     config: (md) => {
@@ -14,17 +18,16 @@ export default defineConfig({
     },
   },
 
+  appearance: false,
+
   themeConfig: {
     outline: {
       level: [2, 3],
     },
     nav: [
       { text: '首页', link: '/' },
-      { text: '电子书', items: [
-        { text: '大模型入门', link: '/llm-for-everyone/00-neural_network/00-overview' },
-      ]},
+      { text: '大模型入门', link: '/llm-for-everyone/00-neural_network/00-overview' },
       { text: '博客', link: '/blog/' },
-      { text: '项目', link: '/projects' },
     ],
 
     sidebar: {
@@ -87,6 +90,10 @@ export default defineConfig({
     search: {
       provider: 'local',
     },
+
+    siteTitle: false,
+
+    logo: '/assets/avatar.jpeg',
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/JackieAnxis' },

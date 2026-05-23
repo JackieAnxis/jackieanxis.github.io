@@ -37,18 +37,9 @@
   --vp-home-hero-name-color: #762f37;
 }
 
-/* 首页撑满视口 */
-.home .VPContent {
-  height: calc(100vh - var(--vp-nav-height, 64px));
-}
-
-.home .VPDoc .container {
-  max-width: 100% !important;
-  padding: 0 !important;
-}
-
-.home .VPDoc .content-container {
-  max-width: 100% !important;
-}
-
 /* 暗色模式保持默认，不做覆盖 */
+
+/* 导航栏头像圆角 */
+.VPNavBarTitle .VPImage {
+  border-radius: 50%;
+}

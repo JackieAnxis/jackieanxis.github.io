@@ -1,6 +1,6 @@
 # 预训练回顾
 
-![预训练全流程：从原始语料、数据清洗、分词、样本构造、前向传播、交叉熵损失、反向传播、AdamW 更新，到学习率调度和检查点保存的完整闭环](/assets/03-pretraining/pretraining-full-process-poster.png)
+![预训练全流程：从原始语料、数据清洗、分词、样本构造、前向传播、交叉熵损失、反向传播、AdamW 更新，到学习率调度和检查点保存的完整闭环](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/pretraining-full-process-poster.png)
 
 这一章我们从数据准备到训练循环到工程细节，完整走了一遍预训练流程。下面把关键内容串起来回顾一下。
 

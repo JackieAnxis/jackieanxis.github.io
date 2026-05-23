@@ -4,7 +4,7 @@
 
 这一篇我们走进训练循环，看模型从随机初始化到学会"说人话"的过程是怎么一步步发生的。
 
-![LLM 训练循环：从 batch 到参数更新](/assets/03-pretraining/training-loop-poster.png)
+![LLM 训练循环：从 batch 到参数更新](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/training-loop-poster.png)
 
 ## 训练循环的全貌
 

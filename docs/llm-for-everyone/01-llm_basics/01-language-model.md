@@ -1,6 +1,6 @@
 # 语言模型：预测下一个词
 
-![语言模型：预测下一个词](/assets/01-llm-basics-01-language-model.png)
+![语言模型：预测下一个词](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/01-llm-basics-01-language-model.png)
 
 你在手机上打字的时候，键盘上方经常会冒出一排候选词。你刚输入"今天天气"，手机就建议"真好""不错""怎么样"。你选了一个，手机又接着猜下一个。
 

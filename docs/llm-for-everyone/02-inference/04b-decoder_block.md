@@ -1,6 +1,6 @@
 # Decoder Block 是什么
 
-![Decoder Block 让当前位置读懂前文，并得到带上下文的表示](/assets/02-inference-04b-decoder-block-hero.png)
+![Decoder Block 让当前位置读懂前文，并得到带上下文的表示](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/02-inference-04b-decoder-block-hero.png)
 
 上一章里，我们把 Decoder Block 简单理解成“阅读和加工上下文的模块”。
 

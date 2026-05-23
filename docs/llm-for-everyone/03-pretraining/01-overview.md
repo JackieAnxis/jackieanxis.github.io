@@ -1,6 +1,6 @@
 # 预训练：让模型学会语言
 
-![](/assets/03-pretraining-01-overview.png)
+![](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/03-pretraining-01-overview.png)
 
 前面我们完整走了一遍推理流程——模型拿到用户的输入，经过 tokenizer 切分、embedding 编码、多层 Transformer 处理、LM Head 打分，最后采样生成下一个 token，循环往复直到输出完整回答。但这一切有一个前提：模型得先经过训练。一个随机初始化的模型，给它输入"你好"，它吐出来的只会是乱码。
 

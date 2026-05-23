@@ -84,7 +84,7 @@ Feed Forward：对每个位置的向量做进一步加工
 
 ## 一张图串起来
 
-![大语言模型推理完整链路：从用户提问、聊天模板、tokenizer、token id、向量矩阵、Decoder Block、LM Head、采样，到把新 token 拼回上下文继续预测](/assets/02-inference-06-summary-one-diagram.png)
+![大语言模型推理完整链路：从用户提问、聊天模板、tokenizer、token id、向量矩阵、Decoder Block、LM Head、采样，到把新 token 拼回上下文继续预测](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/02-inference-06-summary-one-diagram.png)
 
 ```text
 用户提问："为什么天空是蓝色的？"

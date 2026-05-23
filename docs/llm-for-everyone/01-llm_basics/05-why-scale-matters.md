@@ -43,7 +43,7 @@ GPT-4  更大           -> 让人认真思考未来
 
 ## 涌现能力：量变引起质变
 
-![规模带来涌现能力：参数和数据一起变大，能力可能突然跃迁](/assets/01-llm-basics-05-why-scale-matters.png)
+![规模带来涌现能力：参数和数据一起变大，能力可能突然跃迁](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/01-llm-basics-05-why-scale-matters.png)
 
 这是最让人着迷的部分。
 

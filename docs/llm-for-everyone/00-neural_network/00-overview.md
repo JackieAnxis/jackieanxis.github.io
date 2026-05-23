@@ -1,6 +1,6 @@
 # 神经网络是什么
 
-![神经网络：根据输入来预测输出的函数](/assets/00-neural-network-01-what-is-neural-network.png)
+![神经网络：根据输入来预测输出的函数](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/00-neural-network-01-what-is-neural-network.png)
 
 神经网络听起来像一个很复杂的东西，但在刚开始学习时，可以先把它理解成一种特殊的“预测函数”。
 

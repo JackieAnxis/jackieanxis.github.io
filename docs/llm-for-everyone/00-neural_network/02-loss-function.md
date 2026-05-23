@@ -1,6 +1,6 @@
 # 如何衡量一个神经网络的好坏：损失函数
 
-![如何衡量一个神经网络的好坏：损失函数](/assets/00-neural-network-02-loss-function.png)
+![如何衡量一个神经网络的好坏：损失函数](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/00-neural-network-02-loss-function.png)
 
 上一章说到，前向传播会把输入一步步变成预测。比如输入学习时长和复习次数，模型最后给出“通过”或“未通过”的判断，或者给出一个更细的分数。
 

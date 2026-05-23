@@ -1,6 +1,8 @@
-# Markdown 标题规范
+# Markdown 规范
 
 每个 Markdown 页面必须从 h1（`#`）标题开始，且整页只有一个 h1。h1 的内容必须与 frontmatter 中的 `title` 字段完全一致。页面内的章节用 h2（`##`）和小节用 h3（`###`）组织。VitePress 的 "On this page" 大纲只展示 h2 和 h3。
+
+- 图片在推送 github 部署前必须替换成 oss 源，禁止使用本地图片；上传 oss 具体参考 upload-image-to-oss 技能；
 
 
 # 各模块规范
@@ -8,4 +10,3 @@
 ## llm-for-everyone
 
 llm-for-everyone 项目是作为一个科普性质的电子书，目的是为了向广大程序员介绍什么是神经网络、大模型等一系列概念，帮助很多没有接触大模型机会的程序员也能够掌握大模型的核心技术概念，所以一切更新都应该围绕这点核心目的出发。
-

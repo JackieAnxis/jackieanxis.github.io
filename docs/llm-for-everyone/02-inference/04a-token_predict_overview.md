@@ -1,6 +1,6 @@
 # 模型如何预测下一个 token
 
-![模型根据 token id 预测下一个 token 的整体流程](/assets/02-inference-04a-token-predict-hero-v4.png)
+![模型根据 token id 预测下一个 token 的整体流程](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/02-inference-04a-token-predict-hero-v4.png)
 
 上一章讲到，tokenizer 会把完整 prompt 切成 token，并进一步转换成 token id。到了这一步，模型拿到的已经不是原始文本，而是一串数字：
 
@@ -63,7 +63,7 @@ token id 本身只是词表里的编号。
 
 ## Token Embedding：把编号变成向量
 
-![Token Embedding 把离散编号查表转换成可计算的向量矩阵](/assets/02-inference-04a-token-embedding.png)
+![Token Embedding 把离散编号查表转换成可计算的向量矩阵](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/02-inference-04a-token-embedding.png)
 
 Token Embedding 可以理解成模型给每个 token 准备的一张“数字名片”。它的作用是把 token id 这个离散编号，转换成模型可以继续计算的向量。
 
@@ -295,7 +295,7 @@ LM Head：128 -> 640
 
 ## 本章到 logits 为止
 
-![本章流程停在 logits：从 token id 到候选 token 分数，采样会在下一章继续](/assets/02-inference-04a-logits-boundary.png)
+![本章流程停在 logits：从 token id 到候选 token 分数，采样会在下一章继续](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/02-inference-04a-logits-boundary.png)
 
 到这里，“模型预测下一个 token”这一步就完成了。
 

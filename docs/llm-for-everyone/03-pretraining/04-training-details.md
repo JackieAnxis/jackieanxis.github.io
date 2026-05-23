@@ -6,7 +6,7 @@
 
 ## 学习率调度：warmup + cosine decay
 
-![学习率调度：warmup 与 cosine decay](/assets/03-pretraining/learning-rate-schedule-poster.png)
+![学习率调度：warmup 与 cosine decay](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/learning-rate-schedule-poster.png)
 
 ### 问题在哪
 
@@ -49,7 +49,7 @@ lr × (0.1 + 0.45 × (1 + cos(π × 当前步数 / 总步数)))
 
 ## 批次大小与梯度累积
 
-![梯度累积与梯度裁剪：先累积再裁剪，最后更新参数](/assets/03-pretraining/gradient-accumulation-poster.png)
+![梯度累积与梯度裁剪：先累积再裁剪，最后更新参数](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/gradient-accumulation-poster.png)
 
 ### batch size 的权衡
 
@@ -120,7 +120,7 @@ torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
 
 ## 训练监控
 
-![训练监控：loss 下降趋势与学习率调度曲线](/assets/03-pretraining/training-monitoring-curves.png)
+![训练监控：loss 下降趋势与学习率调度曲线](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/training-monitoring-curves.png)
 
 训练跑起来之后，怎么知道它在正常学习？光等它跑完再检查结果是不行的——如果训练方向从一开始就错了，跑了几个小时等于白费。所以训练过程中需要持续监控。最直接的方式就是看**训练日志**。MiniMind 每 100 步打印一次，主要关注这几个指标：
 
@@ -159,7 +159,7 @@ Epoch:[1/2](100/5000), loss: 7.8234, logits_loss: 7.8000, aux_loss: 0.0234, lr: 
 
 ## 混合精度训练
 
-![混合精度训练：16 位浮点数与 32 位浮点数的分工](/assets/03-pretraining/mixed-precision-float-comparison.png)
+![混合精度训练：16 位浮点数与 32 位浮点数的分工](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/mixed-precision-float-comparison.png)
 
 ### 为什么要用低精度
 

@@ -1,6 +1,6 @@
 # 如何训练一个神经网络
 
-![训练神经网络：预测、损失、反向传播与参数更新](/assets/00-neural-network-03-training-neural-network.png)
+![训练神经网络：预测、损失、反向传播与参数更新](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/00-neural-network-03-training-neural-network.png)
 
 前面几节先讲了神经网络的构成、如何完成预测，以及如何用损失函数衡量预测好坏。
 

@@ -1,6 +1,6 @@
 # 采样一个 token
 
-![采样一个 token：从候选概率分布中通过 temperature、top-k、top-p 和 multinomial 选出本轮 token](/assets/02-inference-05-token-sample-hero-v2.png)
+![采样一个 token：从候选概率分布中通过 temperature、top-k、top-p 和 multinomial 选出本轮 token](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/02-inference-05-token-sample-hero-v2.png)
 
 在上一阶段，模型已经根据当前上下文，给出了“下一个 token 可能是什么”的判断。
 

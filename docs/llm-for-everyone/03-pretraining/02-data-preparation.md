@@ -1,6 +1,6 @@
 # 数据准备：模型从什么数据中学习
 
-![数据准备流程总览](/assets/03-pretraining/data-preparation-poster.png)
+![数据准备流程总览](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/data-preparation-poster.png)
 
 上一篇看到了预训练的全流程：数据准备 → 模型初始化 → 训练循环 → 保存检查点。整个过程像一条流水线，而**数据准备**就是这条流水线的第一个环节——也是决定最终效果上限的环节。模型要从海量文本中学习语言规律，那这些文本是什么样子的？又是怎么变成模型能吃的"训练样本"的？这一篇我们就来看这些问题。
 

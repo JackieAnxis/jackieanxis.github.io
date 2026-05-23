@@ -1,6 +1,6 @@
 # 从文字到数字：Tokenizer 和 Embedding
 
-![从文字到数字：Tokenizer 和 Embedding](/assets/01-llm-basics-02-from-text-to-numbers.png)
+![从文字到数字：Tokenizer 和 Embedding](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/01-llm-basics-02-from-text-to-numbers.png)
 
 上一节末尾留了一个问题：语言模型的输入是文字，但神经网络只认数字。那文字怎么变成数字？
 

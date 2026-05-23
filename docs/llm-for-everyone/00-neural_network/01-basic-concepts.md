@@ -1,6 +1,6 @@
 # 神经元、层和前向传播：神经网络如何完成预测
 
-![神经元、层和激活函数：神经网络的基本构成](/assets/00-neural-network-01-basic-concepts.png)
+![神经元、层和激活函数：神经网络的基本构成](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-24/00-neural-network-01-basic-concepts.png)
 
 前面把神经网络理解成可以通过训练调整参数的预测函数：输入进去，经过内部计算，得到预测。这一篇继续往里看，先认识神经元、层和激活函数，再把它们连起来，看神经网络如何完成一次预测。
 

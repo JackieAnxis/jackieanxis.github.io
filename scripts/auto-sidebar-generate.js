@@ -136,16 +136,19 @@ function updateConfig(blogSidebar, ebookSidebar) {
   const blogStr = sidebarToString(blogSidebar)
   const ebookStr = sidebarToString(ebookSidebar)
 
-  // 替换 '/blog/' sidebar 块
-  content = content.replace(
-    /'\/blog\/':\s*\[[\s\S]*?\n      \],\n/g,
-    `'/blog/': [\n${blogStr}\n      ],\n`
-  )
+  const newSidebar = `sidebar: {
+    '/blog/': [
+${blogStr}
+    ],
+    '/llm-for-everyone/': [
+${ebookStr}
+    ],
+  },`
 
-  // 替换 '/llm-for-everyone/' sidebar 块
+  // 替换 sidebar: 到行尾（包括注释）的整个部分
   content = content.replace(
-    /'\/llm-for-everyone\/':\s*\[[\s\S]*?\n      \],\n/g,
-    `'/llm-for-everyone/': [\n${ebookStr}\n      ],\n`
+    /sidebar:\s*\{[^}]*\}[^\n]*/,
+    newSidebar,
   )
 
   fs.writeFileSync(configPath, content, 'utf-8')

@@ -14,9 +14,11 @@ export default defineConfig({
 
   markdown: {
     config: (md) => {
-      md.use(katexPlugin, { mathFence: true })
+      md.use(katexPlugin, { mathFence: true, strict: false })
     },
   },
+
+  ignoreDeadLinks: true,
 
   appearance: false,
 

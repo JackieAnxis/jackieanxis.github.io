@@ -65,8 +65,8 @@
     height: auto;
   }
 
-  .resume-iframe {
-    height: 80vh;
+  .resume-wrapper {
+    height: calc(100vh - 96px);
   }
 }
 </style>

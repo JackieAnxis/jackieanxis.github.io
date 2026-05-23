@@ -1,3 +1,6 @@
 [submodule "external/minimind"]
 	path = external/minimind
 	url = https://github.com/jingyaogong/minimind.git
+[submodule "external/claw-code"]
+	path = external/claw-code
+	url = https://github.com/ultraworkers/claw-code

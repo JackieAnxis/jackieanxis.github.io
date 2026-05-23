@@ -54,9 +54,7 @@
 .resume-iframe {
   width: 100%;
   height: 100%;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none;
 }
 
 @media (max-width: 768px) {

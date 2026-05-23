@@ -8,7 +8,6 @@
         src="/resume.html"
         class="resume-iframe"
         frameborder="0"
-        scrolling="no"
         loading="lazy"
         title="简历"
       />
@@ -28,7 +27,6 @@
 .resume-wrapper {
   position: relative;
   height: 100%;
-  overflow: hidden;
 }
 
 .download-btn {

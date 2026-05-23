@@ -43,3 +43,10 @@
 .VPNavBarTitle .VPImage {
   border-radius: 50%;
 }
+
+/* 文章内图片阴影 */
+.main img {
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--vp-c-divider);
+}

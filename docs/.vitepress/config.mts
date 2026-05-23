@@ -27,7 +27,7 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '人人能懂的大模型', link: '/llm-for-everyone/00-neural_network/00-overview', activeMatch: '^/llm-for-everyone/' },
-      { text: '博客', link: '/blog', activeMatch: '^/blog/' },
+      { text: '博客', link: '/blog/posts/2022/2022-06-02-Simultaneous-Matrix-Orderings-for-Graph-Collections', activeMatch: '^/blog/' },
     ],
 
     sidebar: {}, // github 部署时，会调用 scripts/auto-sidebar-generate.js 来自动生成侧边栏

@@ -1,0 +1,59 @@
+<svg width="1440" height="810" viewBox="0 0 1440 810" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="810" fill="#FFFFFF"/>
+  <path d="M120 130H1320" stroke="#E5E7EB"/>
+  <path d="M120 680H1320" stroke="#E5E7EB"/>
+
+  <text x="140" y="185" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="34" font-weight="700">一开始：拆得很细</text>
+  <text x="140" y="395" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="34" font-weight="700">高频相邻片段：合并</text>
+  <text x="140" y="600" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="34" font-weight="700">之后：更大的 token</text>
+
+  <rect x="500" y="145" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="523" y="195" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">天</text>
+  <text x="596" y="195" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="620" y="145" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="643" y="195" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">空</text>
+  <text x="716" y="195" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="740" y="145" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="763" y="195" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">是</text>
+  <text x="836" y="195" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="860" y="145" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="883" y="195" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">蓝</text>
+  <text x="956" y="195" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="980" y="145" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="1003" y="195" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">色</text>
+  <text x="1076" y="195" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="1100" y="145" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="1123" y="195" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">的</text>
+
+  <rect x="505" y="332" width="100" height="74" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="530" y="381" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">天</text>
+  <text x="627" y="380" fill="#111827" font-family="Arial, sans-serif" font-size="34" font-weight="700">+</text>
+  <rect x="670" y="332" width="100" height="74" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="695" y="381" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">空</text>
+  <path d="M805 369H890" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
+  <path d="M870 346L893 369L870 392" stroke="#2563EB" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="930" y="332" width="130" height="74" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="965" y="381" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">天空</text>
+
+  <rect x="505" y="445" width="100" height="74" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="530" y="494" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">蓝</text>
+  <text x="627" y="493" fill="#111827" font-family="Arial, sans-serif" font-size="34" font-weight="700">+</text>
+  <rect x="670" y="445" width="100" height="74" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="695" y="494" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">色</text>
+  <path d="M805 482H890" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
+  <path d="M870 459L893 482L870 505" stroke="#2563EB" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="930" y="445" width="130" height="74" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="965" y="494" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">蓝色</text>
+
+  <rect x="500" y="570" width="116" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="528" y="620" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">天空</text>
+  <text x="635" y="620" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="660" y="570" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="683" y="620" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">是</text>
+  <text x="759" y="620" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="785" y="570" width="116" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="813" y="620" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">蓝色</text>
+  <text x="920" y="620" fill="#9CA3AF" font-family="Arial, sans-serif" font-size="32">/</text>
+  <rect x="945" y="570" width="80" height="76" rx="10" fill="#FFFFFF" stroke="#111827" stroke-width="3"/>
+  <text x="968" y="620" fill="#111827" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="30" font-weight="700">的</text>
+</svg>

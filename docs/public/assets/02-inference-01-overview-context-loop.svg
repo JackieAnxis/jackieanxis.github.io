@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">上下文在生成中不断增长</title>
+  <desc id="desc">模型每生成一个 token，就把它接回上下文，再基于更新后的上下文继续预测。</desc>
+  <rect width="1200" height="760" fill="#f7f7f4"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" fill="#111">
+    <text x="88" y="102" font-size="40" font-weight="700">每一步只决定下一个 token</text>
+    <text x="88" y="148" font-size="22" fill="#555">新生成的片段会立刻成为下一步预测时能看到的上下文</text>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <g transform="translate(88 228)">
+      <rect width="430" height="116" rx="20" fill="#fff" stroke="#111" stroke-width="2"/>
+      <text x="26" y="42" font-size="22" font-weight="700" fill="#111">第 1 轮上下文</text>
+      <text x="26" y="82" font-size="22" fill="#333">用户：为什么天空是蓝色的？</text>
+    </g>
+    <g transform="translate(682 228)">
+      <rect width="260" height="116" rx="20" fill="#fff" stroke="#111" stroke-width="2"/>
+      <text x="28" y="42" font-size="22" font-weight="700" fill="#111">预测下一个</text>
+      <rect x="28" y="62" width="90" height="34" rx="17" fill="#111"/>
+      <text x="73" y="86" font-size="20" text-anchor="middle" fill="#fff">这是</text>
+    </g>
+    <path d="M532 286h132" fill="none" stroke="#111" stroke-width="2.4" marker-end="url(#arrow)"/>
+    <path d="M812 356 C812 430 650 438 500 438" fill="none" stroke="#111" stroke-width="2.4" marker-end="url(#arrow)"/>
+    <g transform="translate(88 418)">
+      <rect width="560" height="128" rx="20" fill="#fff" stroke="#111" stroke-width="2"/>
+      <text x="26" y="42" font-size="22" font-weight="700" fill="#111">第 2 轮上下文</text>
+      <text x="26" y="82" font-size="22" fill="#333">用户：为什么天空是蓝色的？</text>
+      <text x="26" y="112" font-size="22" fill="#333">助手：这是</text>
+    </g>
+    <g transform="translate(780 424)">
+      <rect width="260" height="116" rx="20" fill="#fff" stroke="#111" stroke-width="2"/>
+      <text x="28" y="42" font-size="22" font-weight="700" fill="#111">继续预测</text>
+      <rect x="28" y="62" width="90" height="34" rx="17" fill="#111"/>
+      <text x="73" y="86" font-size="20" text-anchor="middle" fill="#fff">因为</text>
+    </g>
+    <path d="M664 482h98" fill="none" stroke="#111" stroke-width="2.4" marker-end="url(#arrow)"/>
+    <g transform="translate(88 612)">
+      <rect width="840" height="66" rx="20" fill="#ecebe6" stroke="#111" stroke-width="2"/>
+      <text x="28" y="42" font-size="22" fill="#111">最终答案 = 很多轮“预测一个 token → 拼回上下文”的结果</text>
+    </g>
+  </g>
+  <g fill="#111">
+    <circle cx="1080" cy="104" r="5"/>
+    <circle cx="1110" cy="104" r="5"/>
+    <circle cx="1140" cy="104" r="5"/>
+  </g>
+</svg>

@@ -1,0 +1,1385 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>神经网络训练实验室</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2377231d'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23faf9f7'/%3E%3C/svg%3E">
+    <style>
+        :root {
+            --paper: #f5f0e6;
+            --panel: #fbf7ed;
+            --ink: #171717;
+            --muted: #6c675e;
+            --line: #cfc6b8;
+            --line-dark: #958a7d;
+            --red: #8d1f1f;
+            --red-dark: #5d0d0d;
+            --green: #16451f;
+            --green-soft: #dbe5d8;
+            --mono: "SF Mono", "Menlo", "Consolas", monospace;
+            --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: var(--ink);
+            font-family: var(--sans);
+            line-height: 1.42;
+        }
+
+        .page {
+            width: min(1920px, calc(100vw - 56px));
+            margin: 0 auto;
+            padding: 28px 0 24px;
+        }
+
+        .masthead {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 24px;
+            align-items: start;
+            padding: 0 16px 14px;
+            border-bottom: 2px solid var(--line-dark);
+        }
+
+        .issue {
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: var(--serif);
+            font-size: clamp(40px, 4.2vw, 66px);
+            font-weight: 500;
+            line-height: 0.98;
+            letter-spacing: 0;
+        }
+
+        .deck {
+            max-width: 1050px;
+            margin: 10px 0 0;
+            font-family: var(--serif);
+            font-size: clamp(18px, 1.6vw, 24px);
+            color: #28251f;
+        }
+
+        .page-count {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 42px;
+            font-family: var(--serif);
+            font-size: 26px;
+        }
+
+        .device-note {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 10px;
+            align-items: center;
+            color: #403b34;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .device-icons {
+            display: flex;
+            align-items: end;
+            gap: 6px;
+        }
+
+        .monitor,
+        .phone {
+            display: inline-block;
+            border: 2px solid var(--ink);
+        }
+
+        .monitor {
+            width: 38px;
+            height: 25px;
+            position: relative;
+        }
+
+        .monitor::after {
+            content: "";
+            position: absolute;
+            left: 13px;
+            bottom: -9px;
+            width: 12px;
+            height: 8px;
+            border-top: 2px solid var(--ink);
+        }
+
+        .phone {
+            width: 13px;
+            height: 26px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: auto 1fr 1.5fr;
+            grid-template-rows: minmax(250px, 0.35fr) minmax(160px, auto);
+            grid-template-areas:
+                "controls dataset  network"
+                "loss     loss     network";
+            gap: 16px;
+            padding: 16px 0 12px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 0;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+        }
+
+        .dataset-panel {
+            grid-area: dataset;
+        }
+
+        .controls-panel {
+            grid-area: controls;
+        }
+
+        .controls-panel .controls-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            padding: 14px;
+        }
+
+        .network-panel {
+            grid-area: network;
+        }
+
+        .loss-panel {
+            grid-area: loss;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: start;
+            padding: 18px 22px 8px;
+        }
+
+        .dataset-panel .panel-header {
+            padding-bottom: 4px;
+        }
+
+        .panel h2 {
+            margin: 0;
+            font-family: var(--serif);
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .panel-note,
+        .caption {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .dataset-panel .panel-note {
+            font-size: 13px;
+        }
+
+        .preset-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        svg {
+            display: block;
+            width: 100%;
+        }
+
+        #playground {
+            grid-column: 2;
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .plot-shell {
+            display: contents;
+        }
+
+        .dataset-grid {
+            --plot-pad-ratio: 8.461538%;
+            --axis-left: 0px;
+            --axis-top: 0px;
+            --axis-width: 100%;
+            --axis-height: 100%;
+            --y-slider-left: 0px;
+            --svg-top: 0px;
+            --svg-height: 100%;
+            --colorbar-ramp-height: 120px;
+            position: relative;
+            display: grid;
+            grid-template-columns: 36px minmax(0, 1fr) 54px;
+            grid-template-rows: minmax(0, 1fr) 28px;
+            flex: 1;
+            gap: 4px 10px;
+            min-height: 0;
+            padding: 0 14px 4px;
+        }
+
+        .axis-y-wrap {
+            position: absolute;
+            display: grid;
+            align-items: stretch;
+            justify-items: center;
+            width: 36px;
+            height: var(--svg-height);
+            left: var(--y-slider-left);
+            top: var(--svg-top);
+            z-index: 1;
+        }
+
+        .axis-y-label {
+            position: absolute;
+            top: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: #403b34;
+        }
+
+        .axis-y-value {
+            position: absolute;
+            bottom: 0;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .axis-y-wrap input[type="range"] {
+            align-self: start;
+            width: 100%;
+            height: var(--axis-height);
+            margin-top: var(--axis-top);
+            min-height: 0;
+            writing-mode: vertical-lr;
+            direction: rtl;
+            accent-color: var(--red);
+        }
+
+        .axis-x-wrap {
+            position: relative;
+            display: block;
+            grid-column: 2;
+        }
+
+        .axis-x-label {
+            position: absolute;
+            left: calc(var(--axis-left) + var(--axis-width) + 14px);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            color: #403b34;
+            white-space: nowrap;
+        }
+
+        .axis-x-label span {
+            font-family: var(--mono);
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        .axis-x-wrap input[type="range"] {
+            width: var(--axis-width);
+            margin-left: var(--axis-left);
+            accent-color: var(--red);
+        }
+
+        .plot-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            align-items: center;
+            padding: 0 14px 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .legend-dot {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            margin-right: 8px;
+            border-radius: 50%;
+            vertical-align: -1px;
+        }
+
+        .colorbar {
+            grid-column: 3;
+            display: grid;
+            grid-template-rows: auto auto var(--colorbar-ramp-height) auto;
+            align-self: center;
+            height: var(--svg-height);
+            gap: 8px;
+            justify-items: center;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 12px;
+            min-height: 0;
+        }
+
+        .colorbar-title {
+            font-family: var(--sans);
+            font-weight: 700;
+            color: #403b34;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .colorbar-ramp {
+            width: 28px;
+            height: var(--colorbar-ramp-height);
+            border: 1px solid var(--line);
+            background: linear-gradient(180deg, var(--red), #efe1d8 50%, var(--green));
+        }
+
+        .grid-line {
+            stroke: rgba(255, 255, 255, 0.78);
+            stroke-width: 1;
+        }
+
+        .axis-line {
+            stroke: #81786d;
+            stroke-width: 1.4;
+        }
+
+        .axis-label {
+            fill: #29251f;
+            font-family: var(--serif);
+            font-size: 18px;
+        }
+
+        .point {
+            stroke: rgba(251, 247, 237, 0.8);
+            stroke-width: 2;
+        }
+
+        #network {
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .connection {
+            stroke-linecap: round;
+        }
+
+        .connection.dim {
+            opacity: 0.18;
+        }
+
+        .neuron {
+            stroke: #292521;
+            stroke-width: 1.2;
+        }
+
+        .layer-label,
+        .tiny-label {
+            font-family: var(--sans);
+            font-size: 12px;
+        }
+
+        .training-strip {
+            padding: 8px 22px;
+        }
+
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .metrics-inline {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+        }
+
+        .metric-chip {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .metric-chip-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .metric-chip-value {
+            font-family: var(--mono);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .metric-chip-value.loss {
+            color: var(--red);
+        }
+
+        label.inline {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 4px;
+            grid-column: auto;
+            color: #3c372f;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        label.inline input[type="range"] {
+            width: 90px;
+        }
+
+        label.inline .range-meta {
+            display: none;
+        }
+
+        #loss-chart {
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+            padding: 0 18px 14px;
+        }
+
+        .loss-panel .panel-header {
+            padding-bottom: 0;
+        }
+
+        button,
+        select {
+            min-height: 30px;
+            border: 1px solid var(--line-dark);
+            border-radius: 4px;
+            background: rgba(251, 247, 237, 0.7);
+            color: var(--ink);
+            font: inherit;
+        }
+
+        button {
+            min-width: 0;
+            padding: 0 10px;
+            cursor: pointer;
+        }
+
+        button.primary {
+            padding: 0 10px;
+            background: linear-gradient(180deg, var(--red-dark), #390909);
+            color: #fff;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-label-play,
+        .btn-label-pause {
+            font-size: 13px;
+        }
+
+        button.icon-btn {
+            min-width: 0;
+            padding: 0 10px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-label {
+            font-size: 13px;
+        }
+
+        button:hover,
+        select:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        label {
+            display: grid;
+            grid-column: 1 / -1;
+            gap: 8px;
+            color: #3c372f;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            accent-color: var(--red);
+        }
+
+        .footer-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .tip {
+            position: fixed;
+            z-index: 10;
+            display: none;
+            max-width: 240px;
+            white-space: pre-line;
+            padding: 8px 10px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        @media (max-width: 1060px) {
+            .page {
+                width: min(760px, calc(100vw - 28px));
+            }
+
+            .masthead {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .dataset-panel {
+                flex-direction: column;
+            }
+
+            .metrics-sidebar {
+                flex-direction: row;
+                justify-content: center;
+                gap: 24px;
+                padding: 10px 20px;
+                min-width: auto;
+            }
+
+            .phase::after {
+                display: none;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto;
+                grid-template-areas:
+                    "controls dataset"
+                    "network  network"
+                    "loss     loss";
+                height: auto;
+                min-height: 0;
+                max-height: none;
+            }
+
+            .controls-panel .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .page-count {
+                justify-content: start;
+                margin-bottom: 0;
+            }
+
+            .phase::after {
+                display: none;
+            }
+
+            #playground,
+            #network {
+                min-height: 360px;
+            }
+
+            #playground {
+                max-height: none;
+            }
+
+            #loss-chart {
+                min-height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="masthead">
+            <div>
+                <div class="issue">INTERACTIVE LEARNING SYSTEM</div>
+                <h1>Neural Network Training Visualizer</h1>
+                <p class="deck">可交互的二维分类画布、网络结构动画与损失曲线，直观理解前向传播、反向传播与参数更新过程。</p>
+            </div>
+        </header>
+
+        <section class="dashboard-grid">
+            <div class="panel controls-panel">
+                <div class="controls-bar">
+                    <button id="toggle-run" class="primary" title="播放或暂停训练">
+                        <svg class="icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>
+                        <svg class="icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+                        <span class="btn-label-play">训练</span>
+                        <span class="btn-label-pause" style="display:none">暂停</span>
+                    </button>
+                    <button id="reset-net" class="icon-btn" title="重置网络">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 1 1 3 6.7"/><polyline points="3 7 3 13 9 13"/></svg>
+                        <span class="btn-label">重置</span>
+                    </button>
+                    <label class="inline">
+                        学习率 <span id="lr-label">0.50</span>
+                        <input id="learning-rate" type="range" min="0.01" max="1" step="0.01" value="0.5">
+                    </label>
+                    <label class="inline">
+                        最大 Epoch <span id="max-epoch-label">30000</span>
+                        <input id="max-epoch" type="range" min="1000" max="100000" step="1000" value="30000">
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel dataset-panel">
+                <div class="dataset-grid">
+                    <div class="axis-y-wrap">
+                        <div class="axis-y-label">x₂</div>
+                        <input id="input-x2" type="range" min="0" max="1" step="0.01" value="0.5">
+                        <div id="x2-label" class="axis-y-value">0.50</div>
+                    </div>
+                    <div class="plot-shell">
+                        <svg id="playground" viewBox="0 0 520 520" role="img" aria-label="二维分类训练画布"></svg>
+                        <div class="colorbar" aria-hidden="true">
+                            <div class="colorbar-title">sigmoid<br>输出概率</div>
+                            <div>1.0</div>
+                            <div class="colorbar-ramp"></div>
+                            <div>0.0</div>
+                        </div>
+                    </div>
+                    <div class="axis-x-wrap">
+                        <input id="input-x1" type="range" min="0" max="1" step="0.01" value="0.5">
+                        <div class="axis-x-label">x₁ <span id="x1-label">0.50</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel network-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>网络结构图</h2>
+                    </div>
+                </div>
+                <svg id="network" viewBox="0 0 560 260" role="img" aria-label="神经网络结构图"></svg>
+                <p class="caption" style="padding: 0 24px 16px;">节点颜色表示激活值（a），实线为前向传播，虚线为反向传播，线宽表示权重/梯度大小</p>
+            </div>
+
+            <div class="panel loss-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>损失曲线</h2>
+                    </div>
+                    <div class="metrics-inline">
+                        <div class="metric-chip">
+                            <span class="metric-chip-label">Epoch</span>
+                            <span id="epoch-value" class="metric-chip-value">0</span>
+                        </div>
+                        <div class="metric-chip">
+                            <span class="metric-chip-label">Loss</span>
+                            <span id="loss-value" class="metric-chip-value loss">0.0000</span>
+                        </div>
+                    </div>
+                </div>
+                <svg id="loss-chart" viewBox="0 0 440 150" role="img" aria-label="损失曲线"></svg>
+            </div>
+
+        </section>
+    </main>
+    <div id="tooltip" class="tip"></div>
+
+    <script id="neural-network-engine">
+(function () {
+    "use strict";
+
+    function sigmoid(x) {
+        return 1 / (1 + Math.exp(-x));
+    }
+
+    function init(layerSizes) {
+        const weights = [];
+        const biases = [];
+        for (let l = 0; l < layerSizes.length - 1; l++) {
+            const fanIn = layerSizes[l];
+            const fanOut = layerSizes[l + 1];
+            const scale = Math.sqrt(1 / fanIn);
+            const layerWeights = [];
+            const layerBiases = [];
+            for (let j = 0; j < fanOut; j++) {
+                const neuronWeights = [];
+                for (let k = 0; k < fanIn; k++) {
+                    neuronWeights.push((Math.random() * 2 - 1) * scale);
+                }
+                layerWeights.push(neuronWeights);
+                layerBiases.push(0);
+            }
+            weights.push(layerWeights);
+            biases.push(layerBiases);
+        }
+        return { sizes: layerSizes.slice(), weights, biases };
+    }
+
+    function forward(net, input) {
+        const activations = [input.slice()];
+        const preActivations = [input.slice()];
+        let currentInput = input.slice();
+        for (let l = 0; l < net.weights.length; l++) {
+            const layerPre = [];
+            const layerAct = [];
+            for (let j = 0; j < net.weights[l].length; j++) {
+                let sum = net.biases[l][j];
+                for (let k = 0; k < currentInput.length; k++) {
+                    sum += net.weights[l][j][k] * currentInput[k];
+                }
+                layerPre.push(sum);
+                layerAct.push(sigmoid(sum));
+            }
+            preActivations.push(layerPre);
+            activations.push(layerAct);
+            currentInput = layerAct;
+        }
+        return { activations, preActivations };
+    }
+
+    function computeLoss(predictions, targets) {
+        let totalLoss = 0;
+        for (let i = 0; i < predictions.length; i++) {
+            for (let j = 0; j < predictions[i].length; j++) {
+                const error = predictions[i][j] - targets[i][j];
+                totalLoss += error * error;
+            }
+        }
+        return totalLoss / predictions.length;
+    }
+
+    function backward(net, input, target) {
+        const result = forward(net, input);
+        const activations = result.activations;
+        const numLayers = net.weights.length;
+        const weightGradients = net.weights.map((layer) => layer.map((neuron) => neuron.map(() => 0)));
+        const biasGradients = net.biases.map((layer) => layer.map(() => 0));
+        const deltas = [];
+        const outputLayer = numLayers - 1;
+        const outputDeltas = [];
+
+        for (let j = 0; j < net.weights[outputLayer].length; j++) {
+            const activation = activations[outputLayer + 1][j];
+            const error = activation - target[j];
+            outputDeltas.push(2 * error * activation * (1 - activation));
+        }
+        deltas[outputLayer] = outputDeltas;
+
+        for (let l = outputLayer - 1; l >= 0; l--) {
+            const layerDeltas = [];
+            for (let j = 0; j < net.weights[l].length; j++) {
+                let sum = 0;
+                for (let k = 0; k < net.weights[l + 1].length; k++) {
+                    sum += deltas[l + 1][k] * net.weights[l + 1][k][j];
+                }
+                const activation = activations[l + 1][j];
+                layerDeltas.push(sum * activation * (1 - activation));
+            }
+            deltas[l] = layerDeltas;
+        }
+
+        for (let l = 0; l < numLayers; l++) {
+            for (let j = 0; j < net.weights[l].length; j++) {
+                for (let k = 0; k < net.weights[l][j].length; k++) {
+                    weightGradients[l][j][k] = deltas[l][j] * activations[l][k];
+                }
+                biasGradients[l][j] = deltas[l][j];
+            }
+        }
+
+        return { weightGradients, biasGradients };
+    }
+
+    function updateParameters(net, gradients, learningRate) {
+        for (let l = 0; l < net.weights.length; l++) {
+            for (let j = 0; j < net.weights[l].length; j++) {
+                for (let k = 0; k < net.weights[l][j].length; k++) {
+                    net.weights[l][j][k] -= learningRate * gradients.weightGradients[l][j][k];
+                }
+                net.biases[l][j] -= learningRate * gradients.biasGradients[l][j];
+            }
+        }
+    }
+
+    function trainStep(net, samples, learningRate) {
+        const totalWeightGrads = net.weights.map((layer) => layer.map((neuron) => neuron.map(() => 0)));
+        const totalBiasGrads = net.biases.map((layer) => layer.map(() => 0));
+        const predictions = [];
+
+        for (const sample of samples) {
+            const grads = backward(net, sample.input, sample.target);
+            for (let l = 0; l < net.weights.length; l++) {
+                for (let j = 0; j < net.weights[l].length; j++) {
+                    for (let k = 0; k < net.weights[l][j].length; k++) {
+                        totalWeightGrads[l][j][k] += grads.weightGradients[l][j][k];
+                    }
+                    totalBiasGrads[l][j] += grads.biasGradients[l][j];
+                }
+            }
+            predictions.push(forward(net, sample.input).activations.at(-1));
+        }
+
+        for (let l = 0; l < net.weights.length; l++) {
+            for (let j = 0; j < net.weights[l].length; j++) {
+                for (let k = 0; k < net.weights[l][j].length; k++) {
+                    totalWeightGrads[l][j][k] /= samples.length;
+                }
+                totalBiasGrads[l][j] /= samples.length;
+            }
+        }
+
+        updateParameters(net, { weightGradients: totalWeightGrads, biasGradients: totalBiasGrads }, learningRate);
+        return {
+            loss: computeLoss(predictions, samples.map((sample) => sample.target)),
+            predictions,
+        };
+    }
+
+    function getState(net) {
+        return {
+            sizes: net.sizes.slice(),
+            weights: net.weights.map((layer) => layer.map((neuron) => neuron.slice())),
+            biases: net.biases.map((layer) => layer.slice()),
+        };
+    }
+
+    function clamp01(value) {
+        return Math.max(0, Math.min(1, value));
+    }
+
+    function generateCosineData(count) {
+        const data = [];
+        for (let i = 0; i < count; i++) {
+            const x = Math.random();
+            const noise = (Math.random() - 0.5) * 0.12;
+            const boundary = 0.5 * (1 + Math.cos(x * Math.PI * 2));
+            const y = Math.random();
+            data.push({ input: [x, clamp01(y + noise)], target: [y < boundary ? 0 : 1] });
+        }
+        return data;
+    }
+
+    window.NeuralNetwork = {
+        sigmoid,
+        init,
+        forward,
+        computeLoss,
+        backward,
+        updateParameters,
+        trainStep,
+        getState,
+        generateCosineData,
+    };
+}());
+    </script>
+
+    <script>
+(function () {
+    "use strict";
+
+    const Engine = window.NeuralNetwork;
+    const red = "#77231d";
+    const green = "#254021";
+    const ink = "#1a1a1a";
+    const paper = "#fffefa";
+    const datasetGrid = document.querySelector(".dataset-grid");
+    const playground = document.getElementById("playground");
+    const networkSvg = document.getElementById("network");
+    const lossChart = document.getElementById("loss-chart");
+    const tooltip = document.getElementById("tooltip");
+    const phaseEls = Array.from(document.querySelectorAll(".phase"));
+    const epochValue = document.getElementById("epoch-value");
+    const lossValue = document.getElementById("loss-value");
+    const lrInput = document.getElementById("learning-rate");
+    const lrLabel = document.getElementById("lr-label");
+    const maxEpochInput = document.getElementById("max-epoch");
+    const maxEpochLabel = document.getElementById("max-epoch-label");
+    const speedInput = { value: "4" };
+    const toggleRun = document.getElementById("toggle-run");
+
+    const width = 520;
+    const height = 520;
+    const pad = 44;
+    let net = Engine.init([2, 3, 2, 3, 1]);
+    let samples = Engine.generateCosineData(144);
+    let running = false;
+    let epoch = 0;
+    let phase = 0;
+    let latestLoss = 0;
+    let lossHistory = [];
+    let maxTrainingEpochs = 30000;
+    let lastActivations = Engine.forward(net, [0.5, 0.5]).activations;
+    let lastGradients = null;
+    let userX1 = 0.5;
+    let userX2 = 0.5;
+
+    function svgEl(name, attrs = {}) {
+        const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+        for (const [key, value] of Object.entries(attrs)) {
+            el.setAttribute(key, value);
+        }
+        return el;
+    }
+
+    function plotX(x) {
+        return pad + x * (width - pad * 2);
+    }
+
+    function plotY(y) {
+        return height - pad - y * (height - pad * 2);
+    }
+
+    function syncPlaygroundControls() {
+        const rect = playground.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        const gridRect = datasetGrid.getBoundingClientRect();
+
+        const scale = Math.min(rect.width / width, rect.height / height);
+        const renderedWidth = width * scale;
+        const renderedHeight = height * scale;
+        const offsetX = (rect.width - renderedWidth) / 2;
+        const offsetY = (rect.height - renderedHeight) / 2;
+        const axisLeft = offsetX + pad * scale;
+        const axisHeight = (height - pad * 2) * scale;
+        const colorbarRampHeight = Math.max(80, Math.min(axisHeight, renderedHeight - 96));
+
+        datasetGrid.style.setProperty("--axis-left", `${axisLeft}px`);
+        datasetGrid.style.setProperty("--axis-top", `${offsetY + pad * scale}px`);
+        datasetGrid.style.setProperty("--axis-width", `${(width - pad * 2) * scale}px`);
+        datasetGrid.style.setProperty("--axis-height", `${axisHeight}px`);
+        datasetGrid.style.setProperty("--svg-top", `${rect.top - gridRect.top}px`);
+        datasetGrid.style.setProperty("--svg-height", `${rect.height}px`);
+        datasetGrid.style.setProperty("--y-slider-left", `${Math.max(0, rect.left - gridRect.left + axisLeft - 76)}px`);
+        datasetGrid.style.setProperty("--colorbar-ramp-height", `${colorbarRampHeight}px`);
+    }
+
+    function colorMix(value, alpha = 0.18) {
+        const c0 = [22, 69, 31];
+        const c1 = [141, 31, 31];
+        const r = Math.round(c0[0] * (1 - value) + c1[0] * value);
+        const g = Math.round(c0[1] * (1 - value) + c1[1] * value);
+        const b = Math.round(c0[2] * (1 - value) + c1[2] * value);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function renderPlayground() {
+        playground.textContent = "";
+        const grid = 40;
+        const cellW = (width - pad * 2) / grid;
+        const cellH = (height - pad * 2) / grid;
+
+        for (let gy = 0; gy < grid; gy++) {
+            for (let gx = 0; gx < grid; gx++) {
+                const input = [(gx + 0.5) / grid, (gy + 0.5) / grid];
+                const output = Engine.forward(net, input).activations.at(-1)[0];
+                playground.appendChild(svgEl("rect", {
+                    x: pad + gx * cellW,
+                    y: height - pad - (gy + 1) * cellH,
+                    width: cellW + 0.4,
+                    height: cellH + 0.4,
+                    fill: colorMix(output),
+                }));
+            }
+        }
+
+        for (let i = 0; i <= 10; i++) {
+            const x = pad + i * (width - pad * 2) / 10;
+            const y = pad + i * (height - pad * 2) / 10;
+            playground.appendChild(svgEl("line", { x1: x, y1: pad, x2: x, y2: height - pad, class: "grid-line" }));
+            playground.appendChild(svgEl("line", { x1: pad, y1: y, x2: width - pad, y2: y, class: "grid-line" }));
+        }
+        playground.appendChild(svgEl("line", { x1: pad, y1: height - pad, x2: width - pad, y2: height - pad, class: "axis-line" }));
+        playground.appendChild(svgEl("line", { x1: pad, y1: pad, x2: pad, y2: height - pad, class: "axis-line" }));
+        playground.appendChild(svgEl("line", { x1: width - pad, y1: height - pad, x2: width - pad - 9, y2: height - pad - 5, class: "axis-line" }));
+        playground.appendChild(svgEl("line", { x1: width - pad, y1: height - pad, x2: width - pad - 9, y2: height - pad + 5, class: "axis-line" }));
+        playground.appendChild(svgEl("line", { x1: pad, y1: pad, x2: pad - 5, y2: pad + 9, class: "axis-line" }));
+        playground.appendChild(svgEl("line", { x1: pad, y1: pad, x2: pad + 5, y2: pad + 9, class: "axis-line" }));
+        const xLabel = svgEl("text", { x: width - pad + 10, y: height - pad + 6, class: "axis-label" });
+        xLabel.textContent = "x";
+        playground.appendChild(xLabel);
+        const yLabel = svgEl("text", { x: pad - 8, y: pad - 12, class: "axis-label" });
+        yLabel.textContent = "y";
+        playground.appendChild(yLabel);
+
+        for (const sample of samples) {
+            playground.appendChild(svgEl("circle", {
+                cx: plotX(sample.input[0]),
+                cy: plotY(sample.input[1]),
+                r: 5,
+                fill: sample.target[0] === 1 ? red : green,
+                class: "point",
+            }));
+        }
+
+        // 十字光标：颜色表示 sigmoid 预测值
+        const crosshairOutput = Engine.forward(net, [userX1, userX2]).activations.at(-1)[0];
+        const cx = plotX(userX1);
+        const cy = plotY(userX2);
+        const chColor = colorMix(crosshairOutput, 1);
+        // 白色轮廓确保可见
+        playground.appendChild(svgEl("line", { x1: pad, y1: cy, x2: width - pad, y2: cy, stroke: "rgba(255,255,255,0.6)", "stroke-width": 4 }));
+        playground.appendChild(svgEl("line", { x1: cx, y1: pad, x2: cx, y2: height - pad, stroke: "rgba(255,255,255,0.6)", "stroke-width": 4 }));
+        // 彩色十字线
+        playground.appendChild(svgEl("line", { x1: pad, y1: cy, x2: width - pad, y2: cy, stroke: chColor, "stroke-width": 2, "stroke-dasharray": "6 3" }));
+        playground.appendChild(svgEl("line", { x1: cx, y1: pad, x2: cx, y2: height - pad, stroke: chColor, "stroke-width": 2, "stroke-dasharray": "6 3" }));
+        // 中心点
+        playground.appendChild(svgEl("circle", { cx, cy, r: 5, fill: chColor, stroke: "#fff", "stroke-width": 2 }));
+    }
+
+    function showTip(event, lines) {
+        tooltip.textContent = lines.join("\n");
+        tooltip.style.display = "block";
+        tooltip.style.left = `${event.clientX + 14}px`;
+        tooltip.style.top = `${event.clientY + 14}px`;
+    }
+
+    function hideTip() {
+        tooltip.style.display = "none";
+    }
+
+    function renderNetwork() {
+        networkSvg.textContent = "";
+        const userActivations = Engine.forward(net, [userX1, userX2]).activations;
+        // 输入层固定为用户输入值
+        userActivations[0] = [userX1, userX2];
+        const layers = [2, 3, 2, 3, 1];
+        const xs = [40, 155, 280, 405, 520];
+        const positions = [];
+
+        const gap = 58;
+        const centerY = 130;
+        for (let l = 0; l < layers.length; l++) {
+            positions[l] = [];
+            const offset = (layers[l] - 1) * gap / 2;
+            for (let j = 0; j < layers[l]; j++) {
+                positions[l][j] = {
+                    x: xs[l],
+                    y: centerY - offset + j * gap,
+                };
+            }
+        }
+
+        for (let l = 0; l < net.weights.length; l++) {
+            for (let j = 0; j < net.weights[l].length; j++) {
+                for (let k = 0; k < net.weights[l][j].length; k++) {
+                    const w = net.weights[l][j][k];
+                    const grad = lastGradients ? lastGradients.weightGradients[l][j][k] : 0;
+                    const start = positions[l][k];
+                    const end = positions[l + 1][j];
+                    const dx = end.x - start.x;
+                    const dy = end.y - start.y;
+                    const segLen = Math.hypot(dx, dy) || 1;
+                    const nx = -dy / segLen;
+                    const ny = dx / segLen;
+                    const cpOffset = dx * 0.4;
+                    const nodeR = 22;
+                    // 沿连线方向从圆心缩进到圆边缘
+                    const marginX = dx / segLen * nodeR;
+                    const marginY = dy / segLen * nodeR;
+
+                    const forwardWidth = Math.max(1, 0.5 + Math.min(3, Math.abs(w) * 2));
+                    const backwardWidth = Math.max(1, 0.5 + Math.min(3, Math.log2(1 + Math.abs(grad) * 200) * 1.2));
+                    const forwardShift = forwardWidth / 2 + 0.5;
+                    const backwardShift = backwardWidth / 2 + 0.5;
+
+                    // 前向传播：下方（+n 方向），箭头从左到右
+                    const fsx = start.x + marginX + nx * forwardShift;
+                    const fsy = start.y + marginY + ny * forwardShift;
+                    const fex = end.x - marginX + nx * forwardShift;
+                    const fey = end.y - marginY + ny * forwardShift;
+                    const forwardLine = svgEl("path", {
+                        d: `M${fsx},${fsy} C${fsx + cpOffset},${fsy} ${fex - cpOffset},${fey} ${fex},${fey}`,
+                        stroke: ink,
+                        "stroke-width": forwardWidth,
+                        fill: "none",
+                        class: "connection",
+                    });
+                    forwardLine.addEventListener("mousemove", (event) => showTip(event, [`weight: ${w.toFixed(4)}`]));
+                    forwardLine.addEventListener("mouseleave", hideTip);
+                    networkSvg.appendChild(forwardLine);
+
+                    // 反向传播：上方（-n 方向），箭头从右到左
+                    const bsx = end.x - marginX - nx * backwardShift;
+                    const bsy = end.y - marginY - ny * backwardShift;
+                    const bex = start.x + marginX - nx * backwardShift;
+                    const bey = start.y + marginY - ny * backwardShift;
+                    const backwardLine = svgEl("path", {
+                        d: `M${bsx},${bsy} C${bsx - cpOffset},${bsy} ${bex + cpOffset},${bey} ${bex},${bey}`,
+                        stroke: ink,
+                        "stroke-width": backwardWidth,
+                        fill: "none",
+                        "stroke-dasharray": `${backwardWidth * 2.5} ${backwardWidth * 1.8}`,
+                        class: "connection",
+                    });
+                    networkSvg.appendChild(backwardLine);
+                }
+            }
+        }
+
+        for (let l = 0; l < layers.length; l++) {
+            const label = svgEl("text", { x: xs[l], y: 244, "text-anchor": "middle", class: "layer-label" });
+            label.textContent = ["输入", "隐藏 1", "隐藏 2", "隐藏 3", "输出"][l];
+            networkSvg.appendChild(label);
+
+            for (let j = 0; j < layers[l]; j++) {
+                const activation = userActivations[l]?.[j] ?? 0;
+                let fill;
+                if (l === layers.length - 1) {
+                    // 输出层：与 colorbar 一致的红-浅-绿三段渐变
+                    const red = [141, 31, 31];    // #8d1f1f
+                    const mid = [239, 225, 216];  // #efe1d8
+                    const green = [22, 69, 31];   // #16451f
+                    let r, g, b;
+                    if (activation >= 0.5) {
+                        const t = (activation - 0.5) * 2;
+                        r = Math.round(mid[0] * (1 - t) + red[0] * t);
+                        g = Math.round(mid[1] * (1 - t) + red[1] * t);
+                        b = Math.round(mid[2] * (1 - t) + red[2] * t);
+                    } else {
+                        const t = activation * 2;
+                        r = Math.round(green[0] * (1 - t) + mid[0] * t);
+                        g = Math.round(green[1] * (1 - t) + mid[1] * t);
+                        b = Math.round(green[2] * (1 - t) + mid[2] * t);
+                    }
+                    fill = `rgb(${r}, ${g}, ${b})`;
+                } else {
+                    // 输入/隐藏层：激活值 0 → 白色 #ffffff，1 → #e0d4c0
+                    const r = Math.round(255 - activation * 85);
+                    const g = Math.round(255 - activation * 95);
+                    const b = Math.round(255 - activation * 115);
+                    fill = `rgb(${r}, ${g}, ${b})`;
+                }
+                const circle = svgEl("circle", {
+                    cx: positions[l][j].x,
+                    cy: positions[l][j].y,
+                    r: 22,
+                    fill,
+                    class: "neuron",
+                });
+                networkSvg.appendChild(circle);
+
+                const value = svgEl("text", {
+                    x: positions[l][j].x,
+                    y: positions[l][j].y + 4,
+                    "text-anchor": "middle",
+                    class: "tiny-label",
+                    fill: (l === layers.length - 1) ? (activation > 0.25 && activation < 0.75 ? ink : paper) : (activation > 0.65 ? paper : ink),
+                });
+                value.textContent = activation.toFixed(2);
+                networkSvg.appendChild(value);
+            }
+        }
+    }
+
+    function renderLossChart() {
+        lossChart.textContent = "";
+        const left = 44;
+        const right = 420;
+        const top = 30;
+        const bottom = 104;
+        const chartWidth = right - left;
+        const chartHeight = bottom - top;
+        const minEpoch = 0;
+        const maxEpoch = maxTrainingEpochs;
+        const maxLoss = Math.max(...lossHistory.map((item) => item.loss), 0.001);
+        // 漂亮线性刻度：选择合适的步长，使刻度值为整数或简单小数
+        const niceSteps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
+        const step = niceSteps.find(s => maxLoss / s <= 5) || niceSteps[niceSteps.length - 1];
+        const yMax = Math.ceil(maxLoss / step) * step;
+        const tickCount = Math.round(yMax / step);
+
+        lossChart.appendChild(svgEl("line", { x1: left, y1: bottom, x2: right, y2: bottom, stroke: "#d8d3cc" }));
+        lossChart.appendChild(svgEl("line", { x1: left, y1: top, x2: left, y2: bottom, stroke: "#d8d3cc" }));
+
+        for (let i = 0; i <= tickCount; i++) {
+            const y = bottom - (i / tickCount) * chartHeight;
+            const value = i * step;
+            lossChart.appendChild(svgEl("line", { x1: left, y1: y, x2: right, y2: y, stroke: "#e5ded2", "stroke-dasharray": "3 4" }));
+            const label = svgEl("text", { x: left - 8, y: y + 4, "text-anchor": "end", class: "tiny-label", fill: ink });
+            const decimals = step < 0.1 ? 2 : (step < 1 ? 1 : 0);
+            label.textContent = value.toFixed(decimals);
+            lossChart.appendChild(label);
+        }
+
+        for (let i = 0; i <= 4; i++) {
+            const x = left + i * chartWidth / 4;
+            const value = minEpoch + (maxEpoch - minEpoch) * i / 4;
+            lossChart.appendChild(svgEl("line", { x1: x, y1: top, x2: x, y2: bottom, stroke: "#e5ded2", "stroke-dasharray": "3 4" }));
+            const label = svgEl("text", { x, y: bottom + 18, "text-anchor": "middle", class: "tiny-label", fill: ink });
+            label.textContent = Math.round(value);
+            lossChart.appendChild(label);
+        }
+
+        const yTitle = svgEl("text", { x: left - 8, y: top - 12, "text-anchor": "end", class: "tiny-label", fill: ink });
+        yTitle.textContent = "Loss";
+        lossChart.appendChild(yTitle);
+        const xTitle = svgEl("text", { x: right, y: bottom + 38, "text-anchor": "end", class: "tiny-label", fill: ink });
+        xTitle.textContent = "Epoch";
+        lossChart.appendChild(xTitle);
+        if (lossHistory.length < 2) return;
+
+        const sampled = lossHistory.filter((item) => item.epoch % Math.max(1, Math.floor(maxTrainingEpochs / 200)) === 0);
+        if (sampled.length < 2) return;
+        const points = sampled.map((item) => {
+            const x = left + ((item.epoch - minEpoch) / Math.max(1, maxEpoch - minEpoch)) * chartWidth;
+            const y = bottom - (item.loss / yMax) * chartHeight;
+            return `${x},${y}`;
+        });
+        lossChart.appendChild(svgEl("polyline", {
+            points: points.join(" "),
+            fill: "none",
+            stroke: red,
+            "stroke-width": 2,
+        }));
+    }
+
+    function setPhase(nextPhase) {
+        phase = nextPhase;
+        for (const el of phaseEls) {
+            el.classList.toggle("active", Number(el.dataset.phase) === phase);
+        }
+    }
+
+    function updateMetrics() {
+        epochValue.textContent = String(epoch);
+        lossValue.textContent = latestLoss.toFixed(4);
+    }
+
+    function trainOnce() {
+        if (samples.length === 0) return;
+        if (epoch >= maxTrainingEpochs) {
+            running = false;
+            toggleRun.querySelector(".icon-play").style.display = "block";
+            toggleRun.querySelector(".icon-pause").style.display = "none";
+            toggleRun.querySelector(".btn-label-play").style.display = "inline";
+            toggleRun.querySelector(".btn-label-pause").style.display = "none";
+            return;
+        }
+        setPhase(0);
+        setPhase(1);
+        const learningRate = Number(lrInput.value);
+        setPhase(2);
+        const sampleForGrad = samples[epoch % samples.length];
+        lastGradients = Engine.backward(net, sampleForGrad.input, sampleForGrad.target);
+        const result = Engine.trainStep(net, samples, learningRate);
+        setPhase(3);
+        latestLoss = result.loss;
+        epoch++;
+        lossHistory.push({ epoch, loss: latestLoss });
+        if (lossHistory.length > maxTrainingEpochs) lossHistory.shift();
+        updateMetrics();
+        renderNetwork();
+        renderLossChart();
+        if (epoch % 2 === 0) renderPlayground();
+    }
+
+    function animationLoop() {
+        if (running) {
+            const steps = Number(speedInput.value);
+            for (let i = 0; i < steps; i++) trainOnce();
+        }
+        requestAnimationFrame(animationLoop);
+    }
+
+    function resetNetwork() {
+        net = Engine.init([2, 3, 2, 3, 1]);
+        epoch = 0;
+        latestLoss = 0;
+        lossHistory = [];
+        setPhase(0);
+        updateMetrics();
+        renderPlayground();
+        renderNetwork();
+        renderLossChart();
+    }
+
+    toggleRun.addEventListener("click", () => {
+        running = !running;
+        toggleRun.querySelector(".icon-play").style.display = running ? "none" : "block";
+        toggleRun.querySelector(".icon-pause").style.display = running ? "block" : "none";
+        toggleRun.querySelector(".btn-label-play").style.display = running ? "none" : "inline";
+        toggleRun.querySelector(".btn-label-pause").style.display = running ? "inline" : "none";
+    });
+    document.getElementById("reset-net").addEventListener("click", resetNetwork);
+    lrInput.addEventListener("input", () => {
+        lrLabel.textContent = Number(lrInput.value).toFixed(2);
+    });
+    maxEpochInput.addEventListener("input", () => {
+        maxTrainingEpochs = Number(maxEpochInput.value);
+        maxEpochLabel.textContent = maxTrainingEpochs;
+    });
+    const x1Input = document.getElementById("input-x1");
+    const x1Label = document.getElementById("x1-label");
+    const x2Input = document.getElementById("input-x2");
+    const x2Label = document.getElementById("x2-label");
+    x1Input.addEventListener("input", () => {
+        userX1 = Number(x1Input.value);
+        x1Label.textContent = userX1.toFixed(2);
+        renderPlayground();
+        renderNetwork();
+    });
+    x2Input.addEventListener("input", () => {
+        userX2 = Number(x2Input.value);
+        x2Label.textContent = userX2.toFixed(2);
+        renderPlayground();
+        renderNetwork();
+    });
+    if ("ResizeObserver" in window) {
+        new ResizeObserver(syncPlaygroundControls).observe(playground);
+    } else {
+        window.addEventListener("resize", syncPlaygroundControls);
+    }
+    const initialPredictions = samples.map((s) => Engine.forward(net, s.input).activations.at(-1));
+    lossHistory.push({ epoch: 0, loss: Engine.computeLoss(initialPredictions, samples.map((s) => s.target)) });
+    syncPlaygroundControls();
+    renderPlayground();
+    renderNetwork();
+    renderLossChart();
+    animationLoop();
+}());
+    </script>
+</body>
+</html>

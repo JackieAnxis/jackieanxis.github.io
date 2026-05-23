@@ -1,0 +1,3 @@
+[submodule "external/minimind"]
+	path = external/minimind
+	url = https://github.com/jingyaogong/minimind.git

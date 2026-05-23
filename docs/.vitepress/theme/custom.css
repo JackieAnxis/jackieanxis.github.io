@@ -6,6 +6,35 @@
   font-display: swap;
 }
 
+/* 学术纸质风格 — 基于 resume.html 配色 */
 :root {
+  /* 等宽字体 */
   --vp-font-family-mono: 'Maple Mono NF CN', monospace;
+
+  /* 衬线正文字体 */
+  --vp-font-family-base: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
+
+  /* 配色 */
+  --vp-c-bg: #fbfaf6;
+  --vp-c-bg-soft: #f1ede5;
+  --vp-c-bg-mute: #ece8df;
+  --vp-c-text-1: #151515;
+  --vp-c-text-2: #66625b;
+  --vp-c-text-3: #8a857c;
+  --vp-c-divider: #d8d2c7;
+  --vp-c-brand-1: #762f37;
+  --vp-c-brand-2: #8a4048;
+  --vp-c-brand-3: #5e252c;
+  --vp-c-brand-soft: rgba(118, 47, 55, 0.08);
+
+  /* 侧边栏 */
+  --vp-sidebar-bg-color: #fbfaf6;
+
+  /* 导航栏 */
+  --vp-nav-bg-color: rgba(251, 250, 246, 0.8);
+
+  /* 首页 hero 名字颜色 */
+  --vp-home-hero-name-color: #762f37;
 }
+
+/* 暗色模式保持默认，不做覆盖 */

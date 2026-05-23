@@ -1,6 +1,7 @@
 node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+/.vitepress/
 docs/superpowers
 .DS_Store
 .playwright-mcp/

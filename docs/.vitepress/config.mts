@@ -173,6 +173,8 @@ export default defineConfig({
         text: 'Agent 的核心工作模式',
         items: [
           { text: 'Agent Loop：Agent 的心跳', link: '/agent-revelations/02-core-work-mode/01-agent-loop' },
+          { text: '与模型对话：LLM API 是怎么工作的', link: '/agent-revelations/02-core-work-mode/02-llm-api' },
+          { text: 'Rewind：Agent 的时间回溯', link: '/agent-revelations/02-core-work-mode/0x-rewind' },
         ],
       },
       ],

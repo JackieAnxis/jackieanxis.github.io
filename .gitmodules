@@ -4,3 +4,6 @@
 [submodule "external/claw-code"]
 	path = external/claw-code
 	url = https://github.com/ultraworkers/claw-code
+[submodule ".claude/skills/svg-drawer"]
+	path = .claude/skills/svg-drawer
+	url = git@github.com:JackieAnxis/svg-drawer.git

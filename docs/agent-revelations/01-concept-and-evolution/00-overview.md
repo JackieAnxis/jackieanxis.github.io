@@ -23,7 +23,7 @@ Agent 一词起源于拉丁语 agere，意思是“行动”、“去做”或�
 
 从 2022 年底到现在，Agent 的演进可以不用按产品名背诵。更清晰的看法是：它经历了几次能力边界的扩展。
 
-![agent-evolution](/assets/agent-evolution_3-4.svg)
+![agent-evolution](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/agent-evolution_3-4.svg)
 
 | 时间 | 能力阶段 | 代表事件 | 意义 |
 |---|---|---|---|

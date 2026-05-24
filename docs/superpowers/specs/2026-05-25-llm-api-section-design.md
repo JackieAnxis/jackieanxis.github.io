@@ -86,6 +86,18 @@
   - 流式不影响 Loop 逻辑
   - 改变的是"观察"的时机：从"等全部完成再看"变成"边生成边看"
 
+### h2：Responses API——Chat Completion 的下一代
+
+**内容要点**：
+- 定位：Chat Completion API 的演进版本，不是替代而是升级
+- 为什么讲它：了解 API 设计的演进方向，帮助理解"工具调用"从手动声明到内置集成的趋势
+- 核心差异点：
+  - **内置工具**：`web_search`、`file_search`、`code_interpreter` 等开箱即用，不需要自己写 tool 声明
+  - **有状态对话**：`previous_response_id` 链式引用上一轮响应，不用自己维护完整的 messages 数组
+  - **统一的输出结构**：`output` 数组统一承载文本和工具调用，不再区分 `content` 和 `tool_calls`
+- 用简短 JSON 展示一个 Responses API 调用示例，和前面的 Chat Completion 形成对比
+- 不重复讲请求/响应/流式的完整结构，只在差异处展开
+
 ### h2：Anthropic 标准——不同的设计选择
 
 **内容要点**：

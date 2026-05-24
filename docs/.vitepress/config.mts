@@ -179,6 +179,8 @@ export default defineConfig({
           { text: '权限管线：Agent 的护栏', link: '/agent-revelations/02-core-work-mode/04-permission-pipeline' },
           { text: '技能系统：Agent 的训练手册', link: '/agent-revelations/02-core-work-mode/05-skill-system' },
           { text: '计划与任务系统：Agent 的行动蓝图', link: '/agent-revelations/02-core-work-mode/06-plan-task-system' },
+          { text: 'Subagent 系统：Agent 的多线程工作模式', link: '/agent-revelations/02-core-work-mode/07-subagents' },
+          { text: '记忆系统：Agent 的经验本', link: '/agent-revelations/02-core-work-mode/08-memory-system' },
         ],
       },
       ],

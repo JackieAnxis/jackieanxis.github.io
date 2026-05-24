@@ -1,9 +1,9 @@
 [submodule "external/minimind"]
 	path = external/minimind
 	url = https://github.com/jingyaogong/minimind.git
-[submodule "external/claw-code"]
-	path = external/claw-code
-	url = https://github.com/ultraworkers/claw-code
 [submodule ".claude/skills/svg-drawer"]
 	path = .claude/skills/svg-drawer
 	url = git@github.com:JackieAnxis/svg-drawer.git
+[submodule "external/cc-haha"]
+	path = external/cc-haha
+	url = https://github.com/NanmiCoder/cc-haha.git

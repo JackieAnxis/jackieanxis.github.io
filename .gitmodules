@@ -7,3 +7,6 @@
 [submodule "external/cc-haha"]
 	path = external/cc-haha
 	url = https://github.com/NanmiCoder/cc-haha.git
+[submodule "external/claude-code-docs"]
+	path = external/claude-code-docs
+	url = https://github.com/ericbuess/claude-code-docs.git

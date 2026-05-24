@@ -2,20 +2,6 @@
 
 每个 Claude Code 项目根目录都有一个 `CLAUDE.md` 文件——它是你写给 Agent 的**指令本**：编码标准、项目架构、工作流约定。启动时加载到上下文，Agent 尽力遵循。
 
-Claude Code 还有一套**自动记忆系统**（详见[下一章](./09-memory-system.md)），由 Agent 在对话中自动积累你的偏好和项目决策。本章先讲用户主动编写的 CLAUDE.md。
-
-## 两套记忆系统
-
-| | CLAUDE.md | 自动记忆 |
-|---|---|---|
-| 谁编写 | 你 | Claude |
-| 包含内容 | 指令和规则 | 学习和模式 |
-| 范围 | 项目、用户或组织 | 每个工作树，跨 worktrees 共享 |
-| 加载到 | 每个会话 | 每个会话（前 200 行或 25KB） |
-| 用于 | 编码标准、工作流、项目架构 | 构建命令、调试见解、Claude 发现的偏好 |
-
-> 关于上表中"自动记忆"的详情，见[下一章：记忆系统](./09-memory-system.md)。
-
 CLAUDE.md 是上下文而非强制配置——Claude 尽量遵循但不保证严格遵守。硬阻止某个操作请用 PreToolUse hook。
 
 ## CLAUDE.md 的四层范围
@@ -191,28 +177,3 @@ glob 模式匹配绝对路径，可在任何设置层配置，数组跨层合并
 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config
 ```
 
-## Subagent 记忆
-
-Subagent 可维护自己的自动记忆，独立于主 Agent。详见 Subagent 配置文档。
-
-## `/memory` 命令
-
-记忆管理入口：列出所有加载的 CLAUDE.md / CLAUDE.local.md / 规则文件、切换自动记忆开关、打开记忆文件夹。要求"记住这个"保存到自动记忆，要求"添加到 CLAUDE.md"直接写入文件。
-
-## 故障排除
-
-### Claude 不遵循 CLAUDE.md
-
-CLAUDE.md 作为用户消息传递，非系统提示。排查：`/memory` 验证文件是否加载、使指令更具体、检查跨文件冲突、固定时间点执行的指令改用 hook。
-
-### CLAUDE.md 太大
-
-用路径范围规则分流。`@path` 导入有助于组织但不减少上下文——导入文件在启动时全部加载。
-
-### `/compact` 后指令丢失
-
-根 CLAUDE.md 存活，子目录不会重新注入。将需要持久化的指令写入项目根 CLAUDE.md。
-
-### 不知道自动记忆保存了什么
-
-`/memory` 打开自动记忆文件夹浏览，纯 Markdown，可读取、编辑或删除（详见[下一章](./09-memory-system.md)）。

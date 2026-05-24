@@ -35,6 +35,12 @@ export default defineConfig({
     sidebar: {
       '/blog/': [
       {
+        text: '2026',
+        items: [
+          { text: 'Claude Code 核心问题和可能的解决方案', link: '/blog/posts/2026/2026-05-25-Claude Code Shortages' },
+        ],
+      },
+      {
         text: '2022',
         items: [
           { text: 'Simultaneous Matrix Orderings for Graph Collections', link: '/blog/posts/2022/2022-06-02-Simultaneous-Matrix-Orderings-for-Graph-Collections' },
@@ -153,6 +159,20 @@ export default defineConfig({
           { text: 'Norm 是什么', link: '/llm-for-everyone/references/norm' },
           { text: '位置编码是什么', link: '/llm-for-everyone/references/positional_encoding' },
           { text: 'Self-Attention 是什么', link: '/llm-for-everyone/references/self-attention' },
+        ],
+      },
+      ],
+      '/agent-revelations/': [
+      {
+        text: 'Agent 的概念和演变',
+        items: [
+          { text: 'Agent 的概念和演变', link: '/agent-revelations/01-concept-and-evolution/00-overview' },
+        ],
+      },
+      {
+        text: 'Agent 的核心工作模式',
+        items: [
+          { text: 'Agent Loop：Agent 的心跳', link: '/agent-revelations/02-core-work-mode/01-agent-loop' },
         ],
       },
       ],

@@ -110,6 +110,53 @@ function scanEbook() {
 }
 
 // ============================================================
+// 扫描器：Agent 启示录（按章节目录排序，从 h1 取标题）
+// ============================================================
+function scanAgentRevelations() {
+  const baseDir = path.join(__dirname, '..', 'docs', 'agent-revelations')
+  if (!fs.existsSync(baseDir)) return []
+
+  const chapters = fs.readdirSync(baseDir)
+    .filter(d => fs.statSync(path.join(baseDir, d)).isDirectory())
+    .sort()
+
+  const result = []
+
+  const chapterNames = {
+    '01-concept-and-evolution': 'Agent 的概念和演变',
+    '02-core-work-mode': 'Agent 的核心工作模式',
+  }
+
+  for (const chapter of chapters) {
+    const chapterDir = path.join(baseDir, chapter)
+    const files = fs.readdirSync(chapterDir)
+      .filter(f => f.endsWith('.md'))
+      .sort()
+
+    const items = []
+    for (const file of files) {
+      const content = fs.readFileSync(path.join(chapterDir, file), 'utf-8')
+      const h1Match = content.match(/^# (.+)$/m)
+      if (!h1Match) continue
+
+      items.push({
+        text: h1Match[1].trim(),
+        link: `/agent-revelations/${chapter}/${file.replace(/\.md$/, '')}`,
+      })
+    }
+
+    if (items.length > 0) {
+      result.push({
+        text: chapterNames[chapter] || chapter,
+        items,
+      })
+    }
+  }
+
+  return result
+}
+
+// ============================================================
 // 生成 JS 对象字符串（写入 config.mts 的 sidebar 字段）
 // ============================================================
 function sidebarToString(sidebar, indent = '      ') {
@@ -130,7 +177,7 @@ function sidebarToString(sidebar, indent = '      ') {
 // ============================================================
 // 更新 config.mts 中的 sidebar 配置
 // ============================================================
-function updateConfig(blogSidebar, ebookSidebar) {
+function updateConfig(blogSidebar, ebookSidebar, agentRevelationsSidebar) {
   let content = fs.readFileSync(configPath, 'utf-8')
   const lines = content.split('\n')
 
@@ -158,6 +205,7 @@ function updateConfig(blogSidebar, ebookSidebar) {
 
   const blogStr = sidebarToString(blogSidebar)
   const ebookStr = sidebarToString(ebookSidebar)
+  const agentRevelationsStr = sidebarToString(agentRevelationsSidebar)
 
   const newSidebarBlock = `    sidebar: {
       '/blog/': [
@@ -165,6 +213,9 @@ ${blogStr}
       ],
       '/llm-for-everyone/': [
 ${ebookStr}
+      ],
+      '/agent-revelations/': [
+${agentRevelationsStr}
       ],
     },
 `
@@ -180,9 +231,11 @@ ${ebookStr}
 // ============================================================
 const blogSidebar = scanBlog()
 const ebookSidebar = scanEbook()
+const agentRevelationsSidebar = scanAgentRevelations()
 
-updateConfig(blogSidebar, ebookSidebar)
+updateConfig(blogSidebar, ebookSidebar, agentRevelationsSidebar)
 
 console.log(`博客 sidebar: ${blogSidebar.reduce((n, g) => n + g.items.length, 0)} 篇文章`)
 console.log(`电子书 sidebar: ${ebookSidebar.reduce((n, g) => n + g.items.length, 0)} 篇章节`)
+console.log(`Agent 启示录 sidebar: ${agentRevelationsSidebar.reduce((n, g) => n + g.items.length, 0)} 篇章节`)
 console.log(`已更新 ${configPath}`)

@@ -2,6 +2,8 @@
 
 Subagent 系统提供**上下文隔离、并行执行、专业化分工**的能力——Agent 将复杂任务拆解为独立的子任务，交给不同的子 Agent 并发完成。
 
+> **注**：本文不涉及 teammates 模式，后续有单独介绍
+
 ## 为什么需要 Subagent
 
 | 问题 | Subagent 解法 |
@@ -58,17 +60,27 @@ background: true
 
 | 来源 | 存放位置 | 优先级 |
 |------|----------|--------|
-| 托管设置 | 组织管理员部署 | 1（最高） |
-| `--agents` CLI | 启动时 JSON | 2 |
-| 项目级 | `.claude/agents/` | 3 |
-| 用户级 | `~/.claude/agents/` | 4 |
-| 插件级 | 插件 `agents/` 目录 | 5（最低） |
+| 组织策略 | `/etc/claude-code/` 等全局管理配置 | 6（最高） |
+| CLI/SDK 注入 | `--agents` 参数或 SDK 运行时传入 | 5 |
+| 项目级 | `.claude/agents/` | 4 |
+| 用户级 | `~/.claude/agents/` | 3 |
+| 插件级 | 插件 `agents/` 目录 | 2 |
+| 内置 Agent | 系统预定义（general-purpose、Explore 等） | 1（最低） |
 
-同名 Agent 高优先级覆盖低优先级。Claude Code 递归扫描各级目录，`name` 必须唯一。
+同名 Agent 高优先级覆盖低优先级，即任意自定义 Agent 只要名称与内置 Agent 相同，即可覆盖内置 Agent 的行为。Claude Code 递归扫描各级目录，`name` 必须唯一。
 
 ### 字段速查表
 
-仅 `name` 和 `description` 必填。
+所有 Agent 的基础定义字段可以按四个维度理解：
+
+- **身份标识**：`name`、`description`——说明"我是谁"、"什么时候用我"，必填
+- **能力范围**：`tools`、`disallowedTools`、`mcpServers`——定义"我能用什么工具"
+- **行为控制**：`model`、`effort`、`permissionMode`、`maxTurns`——控制"怎么跑、跑多深"
+- **生命周期**：`background`、`isolation`、`skills`、`hooks`、`memory`——管理"从生到死"
+
+此外还有系统提示和 UI 表现（`color`）等辅助字段。
+
+具体详见：
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -88,8 +100,6 @@ background: true
 | `background` | boolean | 是否始终以后台模式运行 |
 | `initialPrompt` | string | 启动时自动串接在用户提示词前的提示（仅限主对话使用） |
 | `color` | string | UI 颜色 |
-
-## Subagent 来源与内置 Agent
 
 ### 内置 Agent
 
@@ -111,7 +121,9 @@ background: true
 
 #### verification
 
-验证 Agent，用于确认代码变更是否真正实现了预期功能。它会在沙箱中运行变更，执行测试、类型检查、甚至通过 Playwright 操作浏览器确认 UI 效果。
+验证 Agent，用于确认代码变更是否真正实现了预期功能，设计目标是**尽可能破坏被验证的代码**，而不是确认它能工作。它会在沙箱中运行变更，执行测试、类型检查、甚至通过 Playwright 操作浏览器确认 UI 效果。
+
+除了功能性测试外，Verification Agent 还必须执行对抗性探测，包括**并发测试**，**边界值**，**幂等性**，**孤儿操作**（删除或引用不存在的 ID）等，最终结论必须是明确的 `VERDICT: PASS`、`VERDICT: FAIL` 或 `VERDICT: PARTIAL`（仅限环境限制），而非模糊的"应该没问题"。
 
 #### statusline-setup
 
@@ -153,7 +165,7 @@ Agent({
 
 ### Fork 模式（实验功能特性）
 
-省略 `subagent_type` 自动进入 Fork 模式。子 Agent **继承父级完整对话上下文**（所有消息、工具使用记录、思考链），共享 prompt cache，比全新启动更便宜。
+省略 `subagent_type` 自动进入 Fork 模式。子 Agent **继承父级完整对话上下文**（所有消息、工具使用记录、思考链）。
 
 ```js
 Agent({
@@ -161,6 +173,10 @@ Agent({
   prompt: "研究三种部署方案的优劣"
 })
 ```
+
+Fork 模式的核心价值在于**最大化 prompt cache 命中率**，从而大幅降低并行调用的 token 成本。
+
+**直接复用父级上下文**：Fork 子 Agent 不会拥有自己的系统提示和工具列表，而是直接使用父级已经构建好的完整对话上下文。这确保了所有子 Agent 的 API 请求前缀与父级完全一致，从而命中缓存。
 
 
 ### 工作树隔离
@@ -176,7 +192,32 @@ Agent({
 })
 ```
 
-## 权限冒泡设计
+## Subagent 生命周期
+
+Subagent 从创建到资源清理经历完整的状态流转：
+
+| 阶段 | 关键操作 |
+|------|----------|
+| **创建** | 解析输入参数、选择 Agent 定义、检查 MCP 前置条件 |
+| **上下文构建** | 渲染系统提示、组装工具池（独立于父级）、初始化 MCP 服务器、执行 SubagentStart 钩子 |
+| **执行** | 进入 query 循环。后台 Agent 额外启动进度追踪和周期性摘要生成 |
+| **终止** | 达到 `maxTurns` 上限、用户主动终止、或任务自然完成 |
+| **资源清理** | 断开专属 MCP 服务器、释放缓存、清理临时目录、杀死子进程产生的后台任务 |
+
+### 后台 Agent 的特殊处理
+
+后台 Agent 在运行时有一些独特的安全阀机制：
+
+- **权限自动拒绝**：无法弹出用户确认框，需要用户决定的操作会被自动拒绝
+- **DenialTracking**：跟踪连续被拒绝的次数，达到阈值时 Agent 会停止重试
+- **僵尸进程防护**：清理阶段会专门杀死 Agent 产生的后台 Bash 任务，防止变成孤儿进程
+- **周期性摘要**：每 30 秒生成一次任务进度摘要，让主 Agent 了解执行状态
+
+### 中断恢复
+
+被中断的子 Agent 可以从磁盘读取历史记录恢复。恢复类型由磁盘元数据中的 agentType 决定：Fork 类型会重建父级系统提示以保持缓存一致性，命名类型从注册表查找对应定义，未知类型兜底为 general-purpose。恢复时还会重建缓存替换决策、验证 worktree 是否仍存在，然后重新进入执行循环。
+
+## Subagent 的权限体系
 
 ### 权限模式体系
 
@@ -194,6 +235,8 @@ Claude Code 的权限模式定义了 Agent 在执行敏感操作（如文件写�
 - 父级为 `bypassPermissions` 或 `acceptEdits` 时**始终优先**，子 Agent 的配置被忽略
 - 父级为 `auto` 时，子 Agent 继承 auto 模式，分类器用相同规则评估
 - 已批准的权限**不自动泄漏**到子 Agent，除非父级通过 `allowedTools` 显式授予
+
+> **⚠️ 安全提示**：当父级为 `plan` 模式时，子 Agent 若定义了 `permissionMode: bypassPermissions`，将**真正获得 bypass 权限**，从而绕过父级的只读限制。这意味着 `plan` 模式仅约束主线程的交互行为，并非严格的安全隔离边界。
 
 ### bubble (权限冒泡) 模式实现机制
 
@@ -216,6 +259,38 @@ tools: Bash
 ```
 
 当 Agent 通过 `--agent` 或 `agent` 设置作为主会话运行时，`initialPrompt` 自动作为第一个用户轮次提交。
+
+
+### 工具池隔离
+
+如果直接继承父级工具池，子 Agent 可能获得超出其运行能力的权限，带来安全风险。
+因此，Claude Code 通过三层过滤机制为每个子 Agent 重新构建专属工具池。
+
+#### 第一层：全局黑名单
+
+无论什么类型的 Subagent，以下工具一律禁止：
+
+| 被阻断的工具 | 原因 |
+|-------------|------|
+| 任务输出工具 | 防止递归——子 Agent 不应能读取其他任务的输出 |
+| 计划模式切换工具 | 计划模式是主线程抽象，子 Agent 不应切换模式 |
+| 用户提问工具 | 子 Agent 不应直接与用户交互 |
+| 任务终止工具 | 需要访问主线程任务状态，子 Agent 无权 |
+| 子 Agent 创建工具 | 防止嵌套 Agent——子 Agent 不能再生成子 Agent |
+
+#### 第二层：异步白名单
+
+后台运行的 Agent 额外受到白名单限制，仅开放以下核心操作：
+
+- 文件读写与编辑
+- 搜索工具（Grep、Glob、Web 搜索）
+- Bash 命令执行
+- ipynb Notebook 编辑、Skill 工具
+- git Worktree 的 Enter/Exit
+
+#### 第三层：MCP 工具仲裁
+
+以 `mcp__` 为前缀的 MCP 工具在过滤时被**永久放行**。其安全性需要由 MCP server 的配置和插件审批机制保证，不在 Agent 工具过滤层额外限制。
 
 ## 最佳实践
 

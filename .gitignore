@@ -3,7 +3,7 @@ package-lock.json
 /.vitepress/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
-docs/superpowers
+docs/superpowers/**
 docs/public/assets/**/*.png
 docs/public/assets/**/*.jpg
 docs/public/assets/**/*.jpeg

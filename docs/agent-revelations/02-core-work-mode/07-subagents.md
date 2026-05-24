@@ -15,6 +15,8 @@ Subagent 系统提供**上下文隔离、并行执行、专业化分工**的能�
 
 主 Agent 发出指令，子 Agent 自主执行并返回摘要。主对话的上下文保持干净，只保留最终决策。
 
+![Subagent 并行委托架构](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-28/subagent-parallel-architecture.svg)
+
 ## Subagent 的定义
 
 Subagent 是拥有**独立对话上下文**、**系统提示**、**工具池**和**LLM 调用链** 的自主执行单元，消耗自己的 token 预算。与主 Agent 的关系是单向的：主 Agent 通过 Agent 工具唤起，子 Agent 完成后返回单一结果。
@@ -196,6 +198,8 @@ Agent({
 
 Subagent 从创建到资源清理经历完整的状态流转：
 
+![Subagent 生命周期](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-28/subagent-lifecycle-cn-draft.png)
+
 | 阶段 | 关键操作 |
 |------|----------|
 | **创建** | 解析输入参数、选择 Agent 定义、检查 MCP 前置条件 |
@@ -218,6 +222,8 @@ Subagent 从创建到资源清理经历完整的状态流转：
 被中断的子 Agent 可以从磁盘读取历史记录恢复。恢复类型由磁盘元数据中的 agentType 决定：Fork 类型会重建父级系统提示以保持缓存一致性，命名类型从注册表查找对应定义，未知类型兜底为 general-purpose。恢复时还会重建缓存替换决策、验证 worktree 是否仍存在，然后重新进入执行循环。
 
 ## Subagent 的权限体系
+
+![Subagent 权限与工具过滤](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-28/subagent-permission-tooling-cn-draft.png)
 
 ### 权限模式体系
 

@@ -10,3 +10,7 @@
 ## llm-for-everyone
 
 llm-for-everyone 项目是作为一个科普性质的电子书，目的是为了向广大程序员介绍什么是神经网络、大模型等一系列概念，帮助很多没有接触大模型机会的程序员也能够掌握大模型的核心技术概念，所以一切更新都应该围绕这点核心目的出发。
+
+## agent-revelations
+
+agent-revelations 也是一本电子书，面向一些使用过 claude code 的程序员来介绍 Agent 的原理（以 claude code 为例）。 分析 external/cc-haha 的代码 和 external/claude-code-docs 的文档 来配合撰写，仅讲原理，禁止直接引用代码（未阅读过代码的读者会容易迷失），尽可能少讲操作方式（这样会使本文档看着像用户指南，其实用户可以看官方文档来了解）。

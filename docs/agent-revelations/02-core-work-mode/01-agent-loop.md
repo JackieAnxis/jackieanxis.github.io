@@ -1,7 +1,3 @@
----
-title: Agent Loop：Agent 的心跳
----
-
 # Agent Loop：Agent 的心跳
 
 ![agent-loop-flow](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/agent-loop-flow.svg)

@@ -68,6 +68,7 @@ node scripts/upload-images.js "path/to/img1.png" "path/to/img2.jpg"
 - **OSS key 格式**：`YYYY-MM-dd/原标题.ext`
 - **标题提取**：文件名去掉扩展名，空格替换为 `-`
 - **配置来源**：项目根目录的 `.env` 文件
+- **支持的格式**：`.jpg`、`.jpeg`、`.png`、`.gif`、`.svg`（其他格式会被拒绝）
 - **退出码**：全部成功返回 0，部分失败返回 1
 
 ## Common Mistakes

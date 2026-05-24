@@ -37,7 +37,7 @@ function createClient() {
   });
 }
 
-const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif']);
+const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.svg']);
 
 function generateKey(filePath) {
   const base = path.basename(filePath);

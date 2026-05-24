@@ -48,7 +48,8 @@ docs/                          # 站点内容（Markdown）
 ├── blog/posts/                # 博客文章（按年份分目录）
 └── public/                    # 静态资源（图片、字体）
 scripts/                       # 自动化脚本
-└── auto-sidebar-generate.js   # 自动生成 sidebar 配置
+├── auto-sidebar-generate.js   # 自动生成 sidebar 配置
+└── upload-images.js           # 上传本地图片到阿里云 OSS
 ```
 
 ## 技术栈

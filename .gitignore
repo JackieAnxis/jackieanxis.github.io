@@ -8,6 +8,7 @@ docs/public/assets/**/*.png
 docs/public/assets/**/*.jpg
 docs/public/assets/**/*.jpeg
 docs/public/assets/**/*.gif
+docs/public/assets/**/*.svg
 .DS_Store
 .env
 .playwright-mcp/

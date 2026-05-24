@@ -1,6 +1,6 @@
 # 大模型推理过程概览：以 MiniMind 为例
 
-![大模型推理过程概览：从输入问题到循环生成](/assets/02-inference-01-overview-hero.svg)
+![大模型推理过程概览：从输入问题到循环生成](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/02-inference-01-overview-hero.svg)
 
 上一章我们从"语言模型就是预测下一个词"出发，看到了文字怎么变成数字，为什么简单网络处理不了语言，Transformer 怎么用注意力机制解决这些问题，以及为什么模型需要足够大才能涌现出惊人能力。
 
@@ -113,7 +113,7 @@ MiniMind 的推理过程就是：先把用户问题整理成模型熟悉的输�
 
 6. **拼回上下文**
 
-   ![上下文在生成中不断增长：每生成一个 token，就进入下一轮输入](/assets/02-inference-01-overview-context-loop.svg)
+   ![上下文在生成中不断增长：每生成一个 token，就进入下一轮输入](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/02-inference-01-overview-context-loop.svg)
 
    假设模型这一步选出了：
 

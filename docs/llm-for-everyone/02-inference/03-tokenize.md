@@ -1,7 +1,7 @@
 
 # Token 是怎么被切出来的
 
-![Token 是怎么被切出来的：原始文本、token 列表与 token id 列表](/assets/02-inference-03-tokenize-hero.svg)
+![Token 是怎么被切出来的：原始文本、token 列表与 token id 列表](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/02-inference-03-tokenize-hero.svg)
 
 在上一章里，我们把 tokenizer 粗略说成“把文字切成 token 的工具”。这一章稍微展开一点，看看常见 tokenizer，尤其是 BPE (Byte Pair Encoding)，是怎么把一句自然语言变成模型能处理的数字序列的。
 
@@ -195,7 +195,7 @@ BPE 训练时大致会经历几个步骤：
    合并规则：记录哪些片段可以按什么顺序合并
    ```
 
-![BPE 的直觉：把天和空、蓝和色这样的高频相邻片段合并成更大的 token](/assets/02-inference-03-tokenize-bpe-merge.svg)
+![BPE 的直觉：把天和空、蓝和色这样的高频相邻片段合并成更大的 token](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/02-inference-03-tokenize-bpe-merge.svg)
 
 ## 推理时如何切分
 

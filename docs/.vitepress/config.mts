@@ -176,6 +176,8 @@ export default defineConfig({
           { text: '与模型对话：LLM API 是怎么工作的', link: '/agent-revelations/02-core-work-mode/02-llm-api' },
           { text: '工具系统：Agent 的双手', link: '/agent-revelations/02-core-work-mode/03-tool-system' },
           { text: 'Rewind：Agent 的时间回溯', link: '/agent-revelations/02-core-work-mode/0x-rewind' },
+          { text: '权限管线：Agent 的护栏', link: '/agent-revelations/02-core-work-mode/04-permission-pipeline' },
+          { text: '技能系统：Agent 的训练手册', link: '/agent-revelations/02-core-work-mode/05-skill-system' },
         ],
       },
       ],

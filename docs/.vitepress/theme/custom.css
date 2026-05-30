@@ -44,6 +44,12 @@
   border-radius: 50%;
 }
 
+/* 加粗文字更粗 */
+.vp-doc strong,
+.vp-doc b {
+  font-weight: 800;
+}
+
 /* 文章内图片阴影 */
 .main img {
   border-radius: 4px;

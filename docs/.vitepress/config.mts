@@ -28,6 +28,7 @@ export default defineConfig({
     },
     nav: [
       { text: '首页', link: '/' },
+      { text: 'Agent 启示录', link: '/agent-revelations/01-concept-and-evolution/00-overview', activeMatch: '^/agent-revelations/' },
     ],
 
     sidebar: {

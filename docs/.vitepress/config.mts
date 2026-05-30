@@ -64,7 +64,7 @@ export default defineConfig({
     logo: '/assets/avatar.jpeg',
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/JackieAnxis' },
+      { icon: 'github', link: 'https://github.com/JackieAnxis/jackieanxis.github.io' },
     ],
   },
 })

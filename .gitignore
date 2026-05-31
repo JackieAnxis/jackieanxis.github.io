@@ -12,6 +12,7 @@ docs/public/assets/**/*.svg
 .DS_Store
 .env
 .playwright-mcp/
+.superpowers
 
 # 未完成的章节
 docs/agent-revelations/02-core-work-mode/10-context-management.md

@@ -12,3 +12,10 @@ docs/public/assets/**/*.svg
 .DS_Store
 .env
 .playwright-mcp/
+
+# 未完成的章节
+docs/agent-revelations/02-core-work-mode/10-context-management.md
+docs/agent-revelations/03-multi-agent-systems/00-kairos.md
+docs/agent-revelations/03-multi-agent-systems/01-teammates.md
+docs/agent-revelations/04-peripheral-components/0x-rewind.md
+docs/agent-revelations/04-peripheral-components/claude-code-settings.md

@@ -28,7 +28,6 @@ export default defineConfig({
     },
     nav: [
       { text: '首页', link: '/' },
-      { text: '大模型通识课', link: '/llm-for-everyone/00-neural_network/00-overview', activeMatch: '^/llm-for-everyone/' },
       { text: 'Agent 启示录', link: '/agent-revelations/01-concept-and-evolution/00-overview', activeMatch: '^/agent-revelations/' },
     ],
 

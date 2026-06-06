@@ -18,8 +18,16 @@ const themeCssPath = path.join(
     "theme",
     "custom.css",
 );
+const configPath = path.join(
+    __dirname,
+    "..",
+    "docs",
+    ".vitepress",
+    "config.mts",
+);
 const component = fs.readFileSync(componentPath, "utf8");
 const themeCss = fs.readFileSync(themeCssPath, "utf8");
+const config = fs.readFileSync(configPath, "utf8");
 const dynamicNavTitlePath = path.join(
     __dirname,
     "..",
@@ -30,7 +38,6 @@ const dynamicNavTitlePath = path.join(
 );
 const dynamicNavTitle = fs.readFileSync(dynamicNavTitlePath, "utf8");
 const spineUrl = "/assets/agent-revelations-spine.png";
-const llmSpineUrl = "/assets/llm-for-everyone-spine.png";
 
 assert.ok(!component.includes("intro-panel"), "首页主体不应再保留左侧介绍结构");
 assert.ok(!component.includes("bookshelf-heading"), "首页主体不应再保留书架标题结构");
@@ -38,14 +45,15 @@ assert.ok(component.includes("grid-template-columns: minmax(0, 1fr);"), "删除�
 assert.ok(!component.includes("grid-template-columns: minmax(0, 0.72fr) minmax(620px, 1.28fr);"), "首页不应继续使用旧双栏布局");
 assert.ok(component.includes("place-items: center;"), "单列首页应将书架主体居中");
 assert.ok(component.includes("Agent 启示录"), "首页应展示电子书标题");
-assert.ok(component.includes("大模型通识课"), "首页应展示《LLM for Everyone》书籍标题");
+assert.ok(!component.includes("大模型通识课"), "首页暂不展示未完成的《大模型通识课》");
+assert.ok(!config.includes("{ text: '大模型通识课'"), "顶部导航暂不展示未完成的《大模型通识课》");
 assert.ok(
     component.includes("/agent-revelations/01-concept-and-evolution/00-overview"),
     "首页应链接到《Agent 启示录》正文",
 );
 assert.ok(
-    component.includes("/llm-for-everyone/00-neural_network/00-overview"),
-    "首页应链接到《LLM for Everyone》正文",
+    !component.includes("/llm-for-everyone/00-neural_network/00-overview"),
+    "首页暂不链接到未完成的《大模型通识课》正文",
 );
 assert.ok(!component.includes("writing-stats"), "首页左侧不应展示写作统计");
 assert.ok(!component.includes("primary-link"), "首页左侧不应展示开始阅读按钮");
@@ -57,10 +65,10 @@ assert.ok(
     "首页应使用《Agent 启示录》书脊资源",
 );
 assert.ok(
-    component.includes(llmSpineUrl),
-    "首页应使用《LLM for Everyone》书脊资源",
+    !component.includes("/assets/llm-for-everyone-spine.png"),
+    "首页暂不使用《大模型通识课》书脊资源",
 );
-assert.ok(component.includes("/assets/llm-for-everyone-cover.png"), "画廊应使用《LLM for Everyone》封面资源");
+assert.ok(!component.includes("/assets/llm-for-everyone-cover.png"), "首页画廊暂不使用《大模型通识课》封面资源");
 assert.ok(component.includes("book-card spine"), "《Agent 启示录》应使用书脊卡片样式");
 assert.ok(!component.includes("leaning-spine"), "第一本书不应再使用倾斜样式");
 assert.ok(!component.includes("rotate("), "书脊不应倾斜");
@@ -129,8 +137,8 @@ assert.ok(component.includes("gallery-detail"), "横屏画廊右侧应展示当�
 assert.ok(component.includes("gallery-list"), "竖屏画廊应直接展示所有已撰写书籍");
 assert.ok(component.includes("Agent Revelations"), "画廊应展示《Agent 启示录》的英文副标题");
 assert.ok(component.includes("以 Claude Code 为例理解智能体原理"), "画廊应展示《Agent 启示录》的核心介绍");
-assert.ok(component.includes("LLM for Everyone"), "画廊应展示《LLM for Everyone》的英文标题");
-assert.ok(component.includes("面向程序员的大模型入门电子书"), "画廊应展示《LLM for Everyone》的核心介绍");
+assert.ok(!component.includes("LLM for Everyone"), "画廊暂不展示《大模型通识课》的英文标题");
+assert.ok(!component.includes("面向程序员的大模型入门电子书"), "画廊暂不展示《大模型通识课》的核心介绍");
 assert.ok(component.includes("gallery-layout"), "画廊应提供横屏左右布局容器");
 assert.ok(component.includes("grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);"), "横屏时书架和详情应左右布局");
 assert.ok(component.includes("--shelf-stage-top-padding: 28px;"), "横屏应显式记录书架舞台顶部留白，便于右侧展品和书架主体对齐");

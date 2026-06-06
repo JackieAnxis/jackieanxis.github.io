@@ -117,18 +117,6 @@ const featuredBooks = [
     spineAlt: "《Agent 启示录》书脊",
     tags: ["智能体架构", "工具调用", "记忆与上下文", "规划与执行"],
   },
-  {
-    id: "llm-for-everyone",
-    title: "大模型通识课",
-    subtitle: "LLM for Everyone",
-    description: "面向程序员的大模型入门电子书，从神经网络、语言模型、Transformer 到推理和预训练，帮助没有大模型背景的读者建立清晰的技术直觉。",
-    href: "/llm-for-everyone/00-neural_network/00-overview",
-    coverUrl: "/assets/llm-for-everyone-cover.png",
-    coverAlt: "《LLM for Everyone》封面",
-    spineUrl: "/assets/llm-for-everyone-spine.png",
-    spineAlt: "《LLM for Everyone》书脊",
-    tags: ["神经网络", "Transformer", "大语言模型", "预训练"],
-  },
 ];
 
 const maxPlaceholderCount = 9;
@@ -149,27 +137,27 @@ const activeBook = computed(() => (
 const getShelfMetrics = () => {
   if (window.matchMedia("(max-width: 640px)").matches) {
     return {
-      fixedWidth: 69 + 56 + 38,
+      fixedWidth: 69 + 56,
       placeholderWidth: 88,
     };
   }
 
   if (window.matchMedia("(max-width: 960px) and (orientation: landscape)").matches) {
     return {
-      fixedWidth: 53 + 52 + 35,
+      fixedWidth: 53 + 52,
       placeholderWidth: 60,
     };
   }
 
   if (window.matchMedia("(max-width: 1200px)").matches) {
     return {
-      fixedWidth: 85 + 72 + 49,
+      fixedWidth: 85 + 72,
       placeholderWidth: 68,
     };
   }
 
   return {
-    fixedWidth: 107 + 72 + 49,
+    fixedWidth: 107 + 72,
     placeholderWidth: 96,
   };
 };

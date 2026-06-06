@@ -3,7 +3,7 @@ import { katex as katexPlugin } from '@mdit/plugin-katex'
 
 export default defineConfig({
   lang: 'zh-CN',
-  title: "Jiacheng's Site",
+  title: "Jiacheng's Library",
   description: '智能体算法工程师 / 数据智能体 / 数据可视化',
   base: '/',
   cleanUrls: true,
@@ -28,10 +28,65 @@ export default defineConfig({
     },
     nav: [
       { text: '首页', link: '/' },
+      { text: '大模型通识课', link: '/llm-for-everyone/00-neural_network/00-overview', activeMatch: '^/llm-for-everyone/' },
       { text: 'Agent 启示录', link: '/agent-revelations/01-concept-and-evolution/00-overview', activeMatch: '^/agent-revelations/' },
     ],
 
     sidebar: {
+      '/llm-for-everyone/': [
+      {
+        text: '神经网络基础',
+        items: [
+          { text: '神经网络是什么', link: '/llm-for-everyone/00-neural_network/00-overview' },
+          { text: '神经元、层和前向传播：神经网络如何完成预测', link: '/llm-for-everyone/00-neural_network/01-basic-concepts' },
+          { text: '如何衡量一个神经网络的好坏：损失函数', link: '/llm-for-everyone/00-neural_network/02-loss-function' },
+          { text: '如何训练一个神经网络', link: '/llm-for-everyone/00-neural_network/03-training-neural-network' },
+          { text: '本章小结与练习', link: '/llm-for-everyone/00-neural_network/04-summary-and-practice' },
+        ],
+      },
+      {
+        text: '大模型基础',
+        items: [
+          { text: '语言模型：预测下一个词', link: '/llm-for-everyone/01-llm_basics/01-language-model' },
+          { text: '从文字到数字：Tokenizer 和 Embedding', link: '/llm-for-everyone/01-llm_basics/02-from-text-to-numbers' },
+          { text: '简单神经网络的局限', link: '/llm-for-everyone/01-llm_basics/03-simple-network-limits' },
+          { text: 'Transformer 的直觉', link: '/llm-for-everyone/01-llm_basics/04-transformer-intuition' },
+          { text: '大模型：为什么要"大"', link: '/llm-for-everyone/01-llm_basics/05-why-scale-matters' },
+        ],
+      },
+      {
+        text: '推理过程',
+        items: [
+          { text: '大模型推理过程概览：以 MiniMind 为例', link: '/llm-for-everyone/02-inference/01-overview' },
+          { text: 'Token 是怎么被切出来的', link: '/llm-for-everyone/02-inference/03-tokenize' },
+          { text: '模型如何预测下一个 token', link: '/llm-for-everyone/02-inference/04a-token_predict_overview' },
+          { text: 'Decoder Block 是什么', link: '/llm-for-everyone/02-inference/04b-decoder_block' },
+          { text: '采样一个 token', link: '/llm-for-everyone/02-inference/05-token_sample' },
+          { text: '推理过程回顾', link: '/llm-for-everyone/02-inference/06-summary' },
+        ],
+      },
+      {
+        text: '预训练',
+        items: [
+          { text: '预训练：让模型学会语言', link: '/llm-for-everyone/03-pretraining/01-overview' },
+          { text: '数据准备：模型从什么数据中学习', link: '/llm-for-everyone/03-pretraining/02-data-preparation' },
+          { text: '训练循环：模型怎么从数据中学习', link: '/llm-for-everyone/03-pretraining/03-training-loop' },
+          { text: '训练细节：让训练跑稳、跑快', link: '/llm-for-everyone/03-pretraining/04-training-details' },
+          { text: '预训练回顾', link: '/llm-for-everyone/03-pretraining/05-summary' },
+        ],
+      },
+      {
+        text: '参考概念',
+        items: [
+          { text: 'Embedding 是什么', link: '/llm-for-everyone/references/embedding' },
+          { text: 'Feed Forward 是什么', link: '/llm-for-everyone/references/feed-forward' },
+          { text: 'Logits 是什么', link: '/llm-for-everyone/references/logits' },
+          { text: 'Norm 是什么', link: '/llm-for-everyone/references/norm' },
+          { text: '位置编码是什么', link: '/llm-for-everyone/references/positional_encoding' },
+          { text: 'Self-Attention 是什么', link: '/llm-for-everyone/references/self-attention' },
+        ],
+      },
+      ],
       '/agent-revelations/': [
       {
         text: 'Agent 的概念和演变',

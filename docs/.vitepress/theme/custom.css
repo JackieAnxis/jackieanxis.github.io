@@ -44,13 +44,111 @@
   border-radius: 50%;
 }
 
+/* 让动态标题紧跟头像 */
+.VPNavBarTitle .title {
+  gap: 8px;
+  border-bottom: 0 !important;
+}
+
+.VPNavBarTitle > .nav-title-divider {
+  display: none;
+  height: 1px;
+  background: var(--vp-c-gutter);
+  pointer-events: none;
+}
+
+.VPSidebar .group {
+  border-top-color: var(--vp-c-gutter) !important;
+}
+
+/* 始终显示社交链接，不折叠到三点菜单 */
+.VPNavBar .VPSocialLinks {
+  display: flex !important;
+}
+
+.VPNavBar .VPNavBarExtra {
+  display: none !important;
+}
+
+/* 移除导航项与社交链接之间的分割线 */
+.menu + .social-links::before {
+  display: none !important;
+}
+
 /* 加粗文字更粗 */
 .vp-doc strong,
 .vp-doc b {
   font-weight: 800;
 }
 
-/* 文章内图片阴影 */
+/* 空间不足时隐藏右侧大纲折叠按钮 */
+.VPLocalNavOutlineDropdown {
+  display: none !important;
+}
+
+/* 滚动条美化 */
+html,
+body,
+.VPSidebar,
+aside .aside-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(118, 111, 101, 0.28) transparent;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.VPSidebar::-webkit-scrollbar,
+aside .aside-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.VPSidebar::-webkit-scrollbar-thumb,
+aside .aside-container::-webkit-scrollbar-thumb {
+  background: rgba(118, 111, 101, 0.28);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.VPSidebar::-webkit-scrollbar-thumb:hover,
+aside .aside-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(118, 111, 101, 0.45);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+aside .aside-container::-webkit-scrollbar-track,
+.VPSidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (min-width: 960px) {
+  .VPNavBarTitle {
+    display: grid;
+    grid-template-rows: var(--vp-nav-height, 64px) 1px;
+  }
+
+  .VPNavBarTitle .title {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .VPNavBarTitle > .nav-title-divider {
+    display: block;
+  }
+
+  aside {
+    border-right: 10px solid transparent;
+  }
+}
+
 .main img {
   border-radius: 4px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);

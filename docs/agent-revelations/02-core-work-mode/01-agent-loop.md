@@ -1,6 +1,6 @@
 # Agent Loop：Agent 的心跳
 
-![agent-loop-flow](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/agent-loop-flow.svg)
+![agent-loop-flow](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-05/agent-loop-flow.svg)
 
 普通聊天机器人的工作方式很简单：你问一句，它答一句。每次对话都是独立的，模型看不到之前的上下文（或者只看最近几轮），更不会主动推进任务。
 

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig, type HeadConfig } from 'vitepress'
 import { katex as katexPlugin } from '@mdit/plugin-katex'
 
 export default defineConfig({
@@ -139,5 +139,24 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/JackieAnxis/jackieanxis.github.io' },
     ],
+  },
+
+  async transformHead({ pageData }) {
+    const title = pageData.frontmatter.title
+    const description = pageData.frontmatter.description
+    const head: HeadConfig[] = []
+
+    if (title) {
+      head.push(['meta', { property: 'og:title', content: title }])
+      head.push(['meta', { name: 'twitter:title', content: title }])
+    }
+
+    if (description) {
+      head.push(['meta', { name: 'description', content: description }])
+      head.push(['meta', { property: 'og:description', content: description }])
+      head.push(['meta', { name: 'twitter:description', content: description }])
+    }
+
+    return head
   },
 })

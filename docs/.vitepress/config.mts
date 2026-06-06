@@ -14,6 +14,13 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/jpeg', href: '/assets/avatar.jpeg' }],
+    // Open Graph
+    ['meta', { property: 'og:site_name', content: "Jiacheng's Library" }],
+    ['meta', { property: 'og:locale', content: 'zh_CN' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:image', content: 'https://jackieanxis.github.io/assets/avatar.jpeg' }],
+    // Twitter Card
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
   ],
 
   markdown: {

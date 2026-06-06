@@ -8,6 +8,10 @@ export default defineConfig({
   base: '/',
   cleanUrls: true,
 
+  sitemap: {
+    hostname: 'https://jackieanxis.github.io',
+  },
+
   head: [
     ['link', { rel: 'icon', type: 'image/jpeg', href: '/assets/avatar.jpeg' }],
   ],

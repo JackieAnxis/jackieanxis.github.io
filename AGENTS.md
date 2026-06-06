@@ -2,7 +2,7 @@
 
 每个 Markdown 页面必须从 h1（`#`）标题开始，且整页只有一个 h1。h1 的内容必须与 frontmatter 中的 `title` 字段完全一致。页面内的章节用 h2（`##`）和小节用 h3（`###`）组织。VitePress 的 "On this page" 大纲只展示 h2 和 h3。
 
-- 图片在推送 github 部署前必须替换成 oss 源，禁止使用本地图片；上传 oss 具体参考 upload-image-to-oss 技能；
+- 图片在推送 github 部署前必须替换成 oss 源，禁止使用本地图片；上传 oss 具体参考 upload-image-to-oss 技能，未经用户允许禁止上传
 
 
 # 各模块规范

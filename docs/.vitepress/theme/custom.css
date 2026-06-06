@@ -154,3 +154,62 @@ aside .aside-container::-webkit-scrollbar-track,
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   border: 1px solid var(--vp-c-divider);
 }
+
+/* 代码块默认不换行 */
+.vp-doc [class*='language-'] code {
+  white-space: pre-wrap !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 单个代码块切换为换行 */
+.vp-doc [class*='language-'][data-wrap] code {
+  white-space: pre !important;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* 换行切换按钮 — 与 VitePress Copy 按钮同风格 */
+.vp-doc [class*='language-'] > button.code-wrap-toggle {
+  position: absolute;
+  top: 12px;
+  z-index: 3;
+  border: 1px solid var(--vp-code-copy-code-border-color);
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--vp-code-copy-code-bg);
+  opacity: 0;
+  cursor: pointer;
+  background-position: 50%;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s,
+    opacity 0.25s;
+  padding: 0;
+  font-size: 0;
+}
+
+.vp-doc [class*='language-']:hover > button.code-wrap-toggle,
+.vp-doc [class*='language-'] > button.code-wrap-toggle:focus {
+  opacity: 1;
+}
+
+.vp-doc [class*='language-'] > button.code-wrap-toggle:hover {
+  border-color: var(--vp-code-copy-code-hover-border-color);
+  background-color: var(--vp-code-copy-code-hover-bg);
+}
+
+/* 换行状态图标（⏎） */
+.vp-doc [class*='language-'] > button.code-wrap-toggle.wrapped {
+  right: 56px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23808080' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M3 5h18M3 10h18M3 15h18M14 19h7M14 23h7M3 18v3h5M6 19l2.5 2-2.5 2'/%3E%3C/svg%3E");
+}
+
+/* 不换行状态图标（→） */
+.vp-doc [class*='language-'] > button.code-wrap-toggle.nowrap {
+  right: 56px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 5h18M3 10h18M3 15h18M14 19h7M14 23h7M3 18v3h5M6 19l2.5 2-2.5 2' fill='none' stroke='%23808080' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='11' stroke='%23808080' stroke-width='2' fill='none'/%3E%3Cline x1='4' y1='4' x2='20' y2='20' stroke='%23808080' stroke-width='2'/%3E%3C/svg%3E");
+}

@@ -105,7 +105,7 @@ Claude 读取文件、运行只读 shell 命令进行探索并编写计划，但
 **前置处理：广泛的 allow 规则被临时删除。** 进入 auto 模式时，全局性的允许规则（如 `Bash(*)`、`Bash(python*)`、包管理器 run 命令、`Agent` 允许规则）被移除，离开时恢复。防止宽泛规则绕过分类器。
 
 **第一层：安全工具白名单快速通道。** 约 20 个被标记为"安全"的工具直接跳过分类器检查，不浪费 API 调用。包括：
-只读工具（`FileRead`、`Grep`等）、任务管理（`TodoWrite`等）、规划模式（`AskUserQuestion`等）、Agent Team 协调工具（`TeamCreate`等）
+只读工具（`FileRead`、`Grep`等）、任务管理（`TodoWrite`等）、规划模式（`AskUserQuestion`等）、Agent Team 管理工具（`TeamCreate`等）
 
 **第二层：分类器两阶段判断。** 没被白名单跳过的操作，交给分类器。分类器收到三样东西：
 - **对话历史的压缩摘要**（只包含用户的原始输入和 Agent 的工具调用，不包含 Agent 自己生成的文字——防止 Agent 用自己的输出来"说服"分类器）

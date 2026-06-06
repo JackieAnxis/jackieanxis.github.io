@@ -295,7 +295,7 @@ tools → system → messages
 Claude Code 在不同运行场景下选用不同的提示词组装方式，决定逻辑是一个**优先级链**，从高到低依次匹配，命中即停止：
 
 - **覆盖**：显式传入 `overrideSystemPrompt` 时直接替换整个提示词，跳过所有优先级逻辑。这是**架构预留的逃逸机制**——代码中已定义但无实际调用者，为未来全自定义场景（如无人值守模式）保留入口
-- **协调器**：多 Agent 团队协作模式，使用协调器专用提示词，包含任务分配、Worker 管理和通信指导。详见[多 Agent 协作章节](../04-the-way-to-agi/02-agent-teams.md)
+- **协调器**：通过 `CLAUDE_CODE_COORDINATOR_MODE` 环境变量激活的独立模式，系统提示词被**完整替换**为协调器专用提示词，工具集缩减为 Agent/SendMessage/TaskStop。注意：这与 [Agent Teams](../04-the-way-to-agi/02-agent-teams.md) 是两套独立机制——Agent Teams 通过 TeamCreate 工具创建，不替换系统提示词
 - **Agent 模式**：通过 `--agent <name>` 将任意 Agent 设为主 Agent，其提示词**替换**默认提示词。
     - 例外：**自主模式**下 Agent 提示词**追加**而非替换——自主驱动能力（自主身份 + tick + Sleep 工具）若被替换将丢失。详见[KAIROS:主动模式](../04-the-way-to-agi/01-kairos.md)
 - **`--system-prompt`**：用户通过 CLI 参数传入的自定义提示词，直接**替换**默认提示词

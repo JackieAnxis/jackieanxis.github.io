@@ -1,10 +1,12 @@
 # 多 Agent 团队：当并行需要通信时
 
-[Subagent 系统](../02-core-work-mode/07-subagents.md)让 Claude Code 能把任务拆分给多个子 Agent 并行执行。但子 Agent 有一个根本限制：**只能汇报结果，不能持续对话**。叫来、干完、走人——像临时工。
+[Subagent 系统](../02-core-work-mode/07-subagents.md)让 Claude Code 能把任务拆分给多个子 Agent 并行执行。但子 Agent 有一个根本限制：**只能汇报结果，不能持续对话**。叫来、干完、走人——像临时工。这带来了几个核心问题：
 
-想象一个场景：三个 Agent 并行审查同一个 PR——一个查安全、一个查性能、一个查测试覆盖率。安全 Agent 发现了注入漏洞，性能 Agent 发现同一个接口还有 N+1 查询问题。如果它们能互相交流，就可以说"这个接口既不安全又慢，一起重构吧"，而不是各自孤立地写报告。
+- **信息漏斗，多次传递导致信息丢失**： Subagents 之间是“老死不相往来”的。它们只能单线向主代理汇报，无法互相沟通对齐，效率极低，信息容易被过滤，不同 agent 之间容易产生认知冲突而"左右互搏"。
 
-这就是 Agent Teams 要解决的问题：**让多个 Agent 不仅能并行工作，还能互相通信、共享状态、协调行动**。
+- **上下文污染与能力受限**： 因为 Subagents 依然高度依附于主会话的生命周期和逻辑，随着主会话越来越长，单模型同时承担研究、架构、编码、测试等多个角色，注意力被严重分散，输出质量随上下文膨胀而剧烈下滑。
+
+Agent Teams 的推出**让多个 Agent 不仅能并行工作，还能互相通信、共享状态、协调行动**。
 
 ## 子 Agent 与队友：两种并行模式
 
@@ -20,30 +22,96 @@
 
 子 Agent 适合"调完就忘"的委托任务，队友适合需要持续协调的协作任务。
 
+
+## 从普通 Agent 到团队：创建过程的全景
+
+一个普通的 Agent Loop 是如何变成 Agent Team 的？这个过程涉及运行时状态、对话历史和系统提示词三个层面的变化，按时间顺序展开。
+
+### 第一步：TeamCreate——在运行时"种下"团队种子
+
+用户对 Agent 说"我们用多个 Agent 一起做这件事"。Agent 识别到这是一个团队任务，调用 TeamCreate 工具。
+
+TeamCreate 执行时做了三件事：
+
+1. **写入团队配置文件** `~/.claude/teams/{team-name}/config.json`，记录团队名称、Lead ID、成员列表（初始只有 Lead 自己）
+2. **创建任务目录** `~/.claude/tasks/{team-name}/`，初始化共享任务看板
+3. **更新运行时状态**：在内存中记录 `teamName`、`leadAgentId`、`teammates` 等信息
+
+这三步都是**后台操作**，对 LLM 来说不可见。LLM 能看到的是 TeamCreate 的 tool_result——一个包含 `team_name`、`team_file_path`、`lead_agent_id` 的 JSON 字符串。这条 tool_result 作为消息注入到对话历史中，成为 Lead"知道自己创建了团队"的唯一线索。
+
+值得注意的是，TeamCreate **没有改变系统提示词**。Lead 的系统提示词和调用前完全一样，工具集也不缩减。Lead 之所以知道如何管理团队，是因为 TeamCreate 工具自身携带了一份详细的 prompt（作为工具的 `description` 字段），包含完整的团队工作流程指导——如何创建任务、如何分配给队友、如何关闭团队等。这份 prompt 在每次 API 请求时都会发送给模型。
+
+### 第二步：Agent spawn——从 tool_use 到 teammate 的分支判断
+
+接下来 Lead 调用 Agent 工具创建队友：
+
+1. **生成唯一队友名**，检查团队配置文件避免重名
+2. **创建独立的执行上下文**（同一进程内的内存隔离或独立进程）
+3. **在队友的系统提示词末尾追加通信协议**（`TEAMMATE_SYSTEM_PROMPT_ADDENDUM`）
+4. **更新团队配置文件**，将新成员加入 members 列表
+5. **更新运行时状态**：在内存中更新 `teammates` 列表
+
+其中第三步是队友获得角色认知的关键——系统提示词被追加了一段通信协议：
+
+```text
+重要提示：你正在作为团队中的 Agent 运行。要与团队中的任何人通信：
+- 使用 SendMessage 工具，设置 to: "<队友名称>" 向特定队友发送消息
+- 使用 SendMessage 工具，设置 to: "*" 谨慎地进行团队广播
+
+直接输出文本回复对团队中的其他人是不可见的——你必须使用 SendMessage 工具。
+```
+
+这段提示词解决了一个关键问题：**队友不知道自己在团队中**。如果没有这段提示，队友会像普通 Agent 一样直接输出文本回复，而这些回复对其他队友是不可见的。
+
+### 第三步：tool_result——Lead 的团队认知来源
+
+Agent spawn 完成后，tool_result 返回给 Lead：
+
+```text
+Spawned successfully.
+agent_id: researcher@my-project
+name: researcher
+team_name: my-project
+The agent is now running and will receive instructions via mailbox.
+```
+
+这条 tool_result 作为消息注入到 Lead 的对话历史中。Lead 通过这些 tool_result 知道了两件事：自己创建了一个团队（TeamCreate 的 result），以及团队里有哪些队友（Agent spawn 的 result）。
+
+### 三个层面的变化总结
+
+```text
+普通 Agent Loop
+  │
+  │  用户请求 → Agent 调用 TeamCreate
+  │
+  ├─ 运行时：`leadAgentId` 等基础信息被设置（LLM 看不到）
+  ├─ 文件系统：团队配置文件和任务目录被创建（LLM 看不到）
+  ├─ 对话历史：tool_result 注入团队信息
+  ├─ 工具描述：TeamCreate prompt 每次请求都发送
+  │
+  │  Lead 调用 Agent(name, team_name) 创建队友
+  │
+  ├─ 队友的系统提示词：追加通信协议（队友自己看得到）
+  ├─ 团队配置文件：新成员被加入（LLM 看不到）
+  ├─ 对话历史：tool_result 注入队友信息（Lead 看得到）
+  │
+  ▼
+Agent Team 运行中
+```
+
+这个设计有一个精巧之处：**Lead 的系统提示词始终不变**。Lead 不需要被"告知"自己是团队管理者——它通过工具的 description 获得工作流程指导，通过 tool_result 获得团队状态，通过邮箱消息感知队友动态。工具本身就是最好的指导。
+
+> **与协调器模式的区别**：Claude Code 还存在另一套独立的"协调器模式"（Coordinator Mode）。那套模式会**完全替换**系统提示词、**缩减**工具集为仅 Agent/SendMessage/TaskStop。而 Agent Teams 不做这些——Lead 保持完整的工具集和原始系统提示词。两套机制设计哲学不同：协调器模式是"限制自由度"，Agent Teams 是"增加协调层"。
+
+
 ## 团队的四大组件
 
 一个 Agent Team 由四个核心组件构成：
 
-```text
-┌─────────────────────────────────────────────────┐
-│                   Agent Team                      │
-│                                                   │
-│   ┌──────────┐     邮箱系统      ┌──────────┐   │
-│   │  Lead    │◄────────────────►│ Teammate │   │
-│   │ (主线程)  │                  │   Alice   │   │
-│   └────┬─────┘                  └──────────┘   │
-│        │                              ▲          │
-│   共享任务列表                         │          │
-│        │                              │          │
-│   ┌────┴─────┐     邮箱系统      ┌────┴─────┐   │
-│   │ ~/.claude│◄────────────────►│ Teammate │   │
-│   │ /teams/  │                  │   Bob     │   │
-│   │ /tasks/  │                  └──────────┘   │
-│   └──────────┘                                  │
-└─────────────────────────────────────────────────┘
-```
-
-**Lead**（队长）是用户对话的主线程，负责创建团队、分配任务、综合结果。**Teammates**（队友）是独立的 Claude Code 实例，各有自己的上下文窗口和工具集。**共享任务列表**让所有 Agent 看到同一份任务看板，队友可以自行认领任务。**邮箱系统**是 Agent 之间的异步通信通道。
+- **Lead**（队长）是用户对话的主线程，负责创建团队、分配任务、综合结果。
+- **Teammates**（队友）是独立的 Claude Code 实例，各有自己的上下文窗口和工具集。
+- **共享任务列表**让所有 Agent 看到同一份任务看板，队友可以自行认领任务。
+- **邮箱系统**是 Agent 之间的异步通信通道。
 
 团队信息持久化在本地文件系统中：
 
@@ -59,7 +127,7 @@
 
 答案在于**跨进程通信**。Agent Teams 支持两种显示后端：In-Process（所有队友在同一进程）和 Split-Pane（队友在独立的 tmux 窗格中运行）。Split-Pane 模式下，队友是独立的进程，内存队列无法跨进程共享，而文件系统是所有进程都能访问的自然共享层。
 
-但文件系统有并发问题——两个 Agent 同时往同一个收件箱写入时，可能出现数据丢失。Claude Code 用 `proper-lockfile` 库解决这个问题：每次写入前获取文件锁，最多重试 10 次。写入逻辑是"读取 → 追加 → 写回"，在锁的保护下保持原子性。
+但文件系统有并发问题——两个 Agent 同时往同一个收件箱写入时，可能出现数据丢失。解决方案是加锁：每次写入前获取文件锁（最多重试 10 次），写入逻辑为"读取 → 追加 → 写回"，在锁的保护下保持原子性。
 
 ### 15 种消息类型
 
@@ -73,8 +141,8 @@
 - `teammate_terminated`：系统通知某个队友已被移除
 
 **权限类**：
-- `permission_request` / `permission_response`：权限冒泡（后文详述）
-- `sandbox_permission_request` / `sandbox_permission_response`：网络访问权限
+- `permission_request` / `permission_response`：权限请求
+- `sandbox_permission_request` / `sandbox_permission_response`：沙箱环境中的网络访问权限
 - `team_permission_update`：Lead 广播权限变更
 - `mode_set_request`：Lead 修改队友的权限模式
 
@@ -82,7 +150,7 @@
 - `task_assignment`：Lead 分配任务给队友
 - `plan_approval_request` / `plan_approval_response`：计划审批协议
 
-每种消息都有对应的 Zod schema 做结构验证。消息通过 `<teammate-message>` XML 标签包装后注入到 Agent 的对话历史中——和子 Agent 的 `<task-notification>` 使用相同的 XML 注入模式，因为 LLM 对 XML 标签的识别比 JSON 更可靠。
+每种消息都有对应的结构验证。消息通过 `<teammate-message>` 标签包装后注入到 Agent 的对话历史中，因为 LLM 对 XML 标签的识别比 JSON 更可靠。
 
 ## 队友的生命周期
 
@@ -90,20 +158,20 @@
 
 ```text
 Spawn（创建）
-  │  分配颜色、写入 team config
-  │  创建独立上下文（AsyncLocalStorage 或独立进程）
+  │  写入 team config
+  │  创建独立上下文
   │
 Work（工作）
   │  执行 Lead 分配的任务
   │  每 1 秒检查收件箱，有消息就提交为新的对话轮次
   │
 Idle（空闲）
-  │  LLM 返回非工具调用 → 发送 idle_notification 给 Lead
+  │  LLM 返回非工具调用 → 说明任务结束 → 发送 Idle 通知给 Lead
   │  不退出，而是轮询收件箱等待新消息
   │
 Shutdown（关机）
-  Lead 发 shutdown_request → 队友确认收尾 → shutdown_approved
-  系统清理窗格、移除任务、从 config 中删除成员
+  Lead 发关机请求 → 队友确认收尾 → 同意关机
+  系统清理窗格、移除任务、从配置中删除成员
 ```
 
 关键设计是 **idle 状态**。子 Agent 完成任务就销毁，但队友不会——它进入 idle 状态，停止主动执行，但保持收件箱监听。Lead 随时可以通过邮箱给它发送新任务，队友收到消息后被重新激活，继续工作。
@@ -120,9 +188,7 @@ Shutdown（关机）
 
 ## 权限冒泡：队友没有终端
 
-队友是独立的 Claude Code 实例，但它运行在后台，没有自己的终端界面。当队友执行需要用户确认的操作（比如写入文件或运行 Bash 命令）时，无法弹出确认对话框。
-
-Claude Code 的解法是**权限冒泡**——把权限请求从队友"冒泡"到 Lead 的终端：
+Claude Code 不允许队友直接弹窗向用户确认权限（否则用户需要在多个 teammate 之间来回切换），而是采用**权限冒泡**——把权限请求从队友"冒泡"到 Lead 的终端，用户只需关注一个交互入口：
 
 ```text
 队友遇到需要审批的操作
@@ -140,7 +206,7 @@ Lead 的收件箱轮询器（每 1 秒）
   收到响应 → 继续执行或拒绝
 ```
 
-整个流程涉及两个方向的轮询：队友以 500ms 间隔检查 Lead 的审批结果，Lead 以 1 秒间隔检查队友的权限请求。采用轮询而非推送，是因为文件系统没有原生的"文件变更通知到 Agent 对话层"的能力。
+整个流程涉及两个方向的轮询：队友以 500ms 间隔检查 Lead 的审批结果，Lead 以 1 秒间隔检查队友的权限请求（采用轮询而非推送，是因为文件系统没有原生的"文件变更通知到 Agent 对话层"的能力）。
 
 这个机制意味着队友的权限请求会增加 Lead 终端的交互负担。实践中可以通过预配置权限白名单来减少冒泡次数——在 `settings.json` 中预先批准常见操作，队友就不必频繁请求审批。
 
@@ -150,24 +216,24 @@ Agent Teams 支持两种运行模式，决定队友在哪里"活"着：
 
 ### In-Process 模式
 
-所有队友运行在同一个 Node.js 进程中，通过 `AsyncLocalStorage` 实现上下文隔离。每个队友有自己的对话历史、工具调用链和身份信息，但共享 API 客户端和 MCP 连接。
+所有队友运行在同一个 Node.js 进程。每个队友有自己的对话历史、工具调用链和身份信息，但共享 API 客户端和 MCP 连接。
 
 ```text
 ┌─────────── 同一进程 ───────────┐
-│                                 │
-│  Lead (主线程)                   │
-│  Alice (AsyncLocalStorage #1)   │
-│  Bob   (AsyncLocalStorage #2)   │
-│                                 │
-│  共享：API 客户端、MCP 连接      │
-└─────────────────────────────────┘
+│                                │
+│  Lead (主线程)                 │
+│  Alice (上下文隔离 #1)          │
+│  Bob   (上下文隔离 #2)          │
+│                                │
+│  共享：API 客户端、MCP 连接    │
+└────────────────────────────────┘
 ```
 
-用户在终端中用 `Shift+Down` 键在队友之间切换，直接给某个队友发消息。
+用户在终端切换队友，直接给某个队友发消息。
 
 ### Split-Pane 模式
 
-每个队友在独立的 tmux 窗格或 iTerm2 分屏中运行。Lead 占左侧 30% 的窗格，队友分占右侧 70%。
+每个队友在独立的终端分屏中运行。
 
 ```text
 ┌──────────┬──────────┐
@@ -177,13 +243,14 @@ Agent Teams 支持两种运行模式，决定队友在哪里"活"着：
 └──────────┴──────────┘
 ```
 
-Split-Pane 模式下，队友是独立的操作系统进程，通过环境变量接收身份信息（`CLAUDE_CODE_AGENT_NAME`、`CLAUDE_CODE_AGENT_COLOR` 等）。
+Split-Pane 模式下，队友是独立的操作系统进程，通过环境变量接收身份信息。
 
 ### 为什么需要两种模式
 
-In-Process 模式无需额外依赖，在任何终端都能运行，资源消耗更少，但所有队友挤在一个界面里，切换不够直观。Split-Pane 模式需要 tmux 或 iTerm2，但每个队友有独立视图，可以同时看到所有人的输出。
+In-Process 模式无需额外依赖，在任何终端都能运行，资源消耗更少，但所有队友挤在一个界面里，切换不够直观。
+Split-Pane 模式需要 tmux 或 iTerm2，但每个队友有独立视图，可以同时看到所有人的输出。
 
-系统通过 `getResolvedTeammateMode()` 自动选择：如果已经在 tmux 会话中，就用 Split-Pane；否则默认 In-Process。也可以通过 `--teammate-mode` 参数或 `settings.json` 中的 `teammateMode` 手动指定。
+系统会自动选择：如果已经在 tmux 会话中，就用 Split-Pane；否则默认 In-Process。也可以通过 `--teammate-mode` 参数或 `settings.json` 中的 `teammateMode` 手动指定。
 
 ## 共享任务列表
 
@@ -198,7 +265,7 @@ In-Process 模式无需额外依赖，在任何终端都能运行，资源消耗
 
 ## 代价与限制
 
-Agent Teams 目前仍处于实验阶段，通过 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 环境变量启用。
+Agent Teams 目前仍处于实验阶段，通过环境变量启用，会带来一些限制：
 
 **Token 成本线性增长**。每个队友是一个独立的 Claude Code 实例，有自己的上下文窗口，3 个队友意味着 3 倍的 token 消耗。对于研究、审查等需要多视角的任务，额外成本通常值得；对于简单任务，单个会话或子 Agent 更经济。
 
@@ -210,4 +277,4 @@ Agent Teams 目前仍处于实验阶段，通过 `CLAUDE_CODE_EXPERIMENTAL_AGENT
 
 **文件冲突**。两个队友编辑同一个文件会导致覆盖。任务分配时需要确保每个队友操作不同的文件集。
 
-这些限制并非设计缺陷，而是"实验性功能"的现实——团队模式的骨架已经搭好，核心通信和协调机制已经跑通，但细节仍在打磨中。
+**上下文压缩后的团队认知丢失**。Lead 的团队认知依赖对话历史中的 tool_result 和邮箱消息。当对话过长触发上下文压缩时，这些信息被摘要化，如果队友恰好沉默，Lead 可能"忘记"自己在管理一个团队。与计划模式等机制不同，Agent Teams 目前没有压缩后的团队信息恢复机制。

@@ -45,7 +45,6 @@ CLAUDE.md 是你主动写给 Agent 的指令。但指令是静态的：你只能
 
 **参考记忆（reference）**——外部系统的位置和用途。**通常团队级。**
 
-
 **MEMORY.md**（索引文件，会话启动时加载到系统提示，限制：200 行、25KB），示例：
 
 ```markdown
@@ -128,11 +127,18 @@ Grafana 看板 grafana.internal/d/api-latency 是 oncall 监控面板。
 
 ### Subagent 记忆
 
-Subagent 记忆专用于跨对话保留角色特定领域知识（通过在 frontmatter 中写入：`memory: user/project/local` 来触发记忆）。异于主 Agent，其写入非自动触发，须经 Agent 定义文件（`.claude/agents/*.md`）的 system prompt 来引导 Subagent 主动写入记忆，格式定义和主  Agent 无区别，一般也分多个存储级别。
+Subagent 记忆专用于跨对话保留角色特定领域知识。与主 Agent 的两点关键不同：
+
+1. **写入非自动触发**：须经 Agent 定义文件（`.claude/agents/*.md`）的 system prompt 来引导 Subagent 主动写入记忆。
+2. **不共享主 Agent 的记忆目录**：Subagent 拥有独立的存储位置。
+
+每个 Subagent 通过定义文件 frontmatter 的 `memory` 字段**三选一**指定存储位置——这不是层级叠加，而是互斥的后端选择：
 
 - **user**：`~/.claude/agent-memory/{agentType}/`（跨项目通用）
 - **project**：`{项目目录}/.claude/agent-memory/{agentType}/`（项目特定，受版本控制）
 - **local**：`{项目目录}/.claude/agent-memory-local/{agentType}/`（项目本地，免版本控制）
+
+记忆的格式定义与主 Agent 无区别。
 
 ## 记忆的生命周期
 
@@ -152,7 +158,23 @@ Subagent 记忆专用于跨对话保留角色特定领域知识（通过在 fron
 4. **读取**：有行数/字节数限制，超长截断
 5. **注入**：使用 `<system-reminder>` 标签包裹后注入上下文
 
+```
+<system-reminder>
+As you answer the user's questions, you can use the following context:
+# claudeMd
+{所有层 CLAUDE.md 拼接后的文本}
+{根据上述方式提取到的记忆}
+
+# currentDate
+Today's date is 2026-05-29
+
+IMPORTANT: this context may or may not be relevant to your tasks...
+</system-reminder>
+```
+
 检索过程中有一个**异步预取**优化：系统会在回答用户问题的同时，加载相关的记忆，当下次用户提问的时候，就可以把这段记忆附上作为参考。此外，目录扫描结果也会被缓存，仅当记忆目录内容变化时才重新扫描。
+
+检索结果的注入位置在近期发生了一次重要调整：自动记忆从 CLAUDE.md 前置管道（拼在消息列表最前面）移到了后置附件中（拼在消息列表末尾）。动机仍然是为了复用上下文缓存。详见[上下文：Agent 的记忆与视野](./10-context-overview.md)的 Delta 模式小节。
 
 记忆附带新鲜度标签：
 
@@ -164,6 +186,12 @@ Subagent 记忆专用于跨对话保留角色特定领域知识（通过在 fron
 | 超过 1 天 | 附加失活警告 |
 
 > 这条记忆已保存 N 天。记忆是时间点的观察，不是实时状态——关于代码行为或文件位置的声明可能已过时。在断言为事实前请验证当前代码。
+
+### 和 CLAUDE.md 加载方式的区别
+
+**CLAUDE.md 是全量拼接**。系统按 Managed → User → Project（从根目录向 CWD 逐级）→ Local 的顺序收集所有文件，拼接成一个字符串注入系统提示。越靠近 CWD 的文件越晚出现，模型天然更关注最后出现的内容——这是一种隐式的优先级，而非正式的覆盖机制。
+
+**记忆系统是平铺检索**，不存在层级。所有记忆文件平铺在同一目录下，每轮对话中 Sonnet 模型根据用户查询的语义，从候选记忆中选出最相关的 5 条注入上下文。这更像**搜索引擎**，而非配置文件合并。同一个 git 仓库的所有 worktree 共享此目录。
 
 
 ### 对话结束后：自动提取

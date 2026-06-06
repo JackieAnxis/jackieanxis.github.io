@@ -63,6 +63,7 @@ Claude Code 启动时收集所有层的 CLAUDE.md 文本，拼接后包装成一
 As you answer the user's questions, you can use the following context:
 # claudeMd
 {所有层 CLAUDE.md 拼接后的文本}
+{事实上还会注入记忆，这是下一讲的内容}
 
 # currentDate
 Today's date is 2026-05-29

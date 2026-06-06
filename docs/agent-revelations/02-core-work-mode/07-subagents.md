@@ -1,4 +1,4 @@
-# Subagent 系统：Agent 的多线程工作模式
+# Subagent 系统：多 Agents 合作
 
 Subagent 系统提供**上下文隔离、并行执行、专业化分工**的能力——Agent 将复杂任务拆解为独立的子任务，交给不同的子 Agent 并发完成。
 

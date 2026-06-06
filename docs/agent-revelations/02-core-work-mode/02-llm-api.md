@@ -1,4 +1,4 @@
-# 与模型对话：LLM API 是怎么工作的
+# 与模型对话：LLM API 工作模式
 
 上一节讲了 Agent Loop：一个 `while (true)` 循环，每一轮循环的背后其实就是**一次 LLM API 调用**。
 

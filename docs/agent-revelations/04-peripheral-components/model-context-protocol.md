@@ -1,6 +1,6 @@
-# MCP（Model Context Protocol）：AI 时代的 “USB-C 接口”
+# MCP：AI 时代的 “USB-C 接口”
 
-Model Context Protocol（模型上下文协议，简称 MCP）是 Anthropic 提出的开源标准协议，用于标准化 AI 模型与外部数据源之间的通信方式。它就像电脑和外设之间的”USB-C 接口”——无论什么牌子的电脑（AI 客户端），连接什么设备（数据源），只要都支持 USB-C（MCP 标准），插上就能协同工作，无需为每个设备单独开发驱动。
+MCP（Model Context Protocol，模型上下文协议）是 Anthropic 提出的开源标准协议，用于标准化 AI 模型与外部数据源之间的通信方式。它就像电脑和外设之间的”USB-C 接口”——无论什么牌子的电脑（AI 客户端），连接什么设备（数据源），只要都支持 USB-C（MCP 标准），插上就能协同工作，无需为每个设备单独开发驱动。
 
 ![MCP Architecture](https://www.runoob.com/wp-content/uploads/2025/03/https___dev-to-uploads.s3.amazonaws.com_uploads_articles_nuvybev34xhz3btc0xys.jpeg)
 

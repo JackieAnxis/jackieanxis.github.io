@@ -116,14 +116,15 @@ export default defineConfig({
             { text: 'Subagent 系统：多 Agents 合作', link: '/agent-revelations/02-core-work-mode/07-subagents' },
             { text: 'CLAUDE.md：Agent 的指令本', link: '/agent-revelations/02-core-work-mode/08-claude-md' },
             { text: '记忆系统：Agent 的经验本', link: '/agent-revelations/02-core-work-mode/09-memory-system' },
-            { text: '上下文：Agent 的记忆与视野', link: '/agent-revelations/02-core-work-mode/10-context-overview' },
-            { text: '上下文压缩：当窗口不够用时', link: '/agent-revelations/02-core-work-mode/11-context-management' },
+            { text: 'AutoDream：Agent 的睡眠记忆整理', link: '/agent-revelations/02-core-work-mode/10-auto-dream' },
+            { text: '上下文：Agent 的记忆与视野', link: '/agent-revelations/02-core-work-mode/11-context-overview' },
+            { text: '上下文压缩：当窗口不够用时', link: '/agent-revelations/02-core-work-mode/12-context-management' },
           ],
         },
         {
           text: '周围组件',
           items: [
-            { text: 'MCP：AI 时代的 "USB-C 接口"', link: '/agent-revelations/04-peripheral-components/model-context-protocol' },
+            { text: 'MCP：AI 时代的 "USB-C 接口"', link: '/agent-revelations/03-peripheral-components/model-context-protocol' },
           ],
         },
       ],

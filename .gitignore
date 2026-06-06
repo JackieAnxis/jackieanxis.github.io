@@ -10,7 +10,6 @@ docs/superpowers/**
 .superpowers
 
 # 未完成的章节
-docs/agent-revelations/03-multi-agent-systems/
 docs/agent-revelations/04-peripheral-components/0x-rewind.md
 docs/agent-revelations/04-peripheral-components/claude-code-settings.md
 docs/agent-revelations/05-easter-egg/compact-partial.md

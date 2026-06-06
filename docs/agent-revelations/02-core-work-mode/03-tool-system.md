@@ -114,3 +114,5 @@ MCP 工具在每个维度上都比内置工具权重略高（+1~+2），因为 M
 3. **排序返回**：按总分降序排列，`browser_click`(24) > `browser_navigate`(12)
 
 工具经过了过滤筛选和按需加载，终于出现在模型面前。但模型真正发起一次工具调用时，还有最后一道防线——权限管线。那正是下一节的内容。
+
+**延伸阅读**：[MCP 协议：AI 时代的 “USB-C 接口”](../04-peripheral-components/model-context-protocol.md)

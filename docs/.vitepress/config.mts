@@ -159,4 +159,32 @@ export default defineConfig({
 
     return head
   },
+
+  async transformPageData(pageData) {
+    const title = pageData.frontmatter.title
+    const description = pageData.frontmatter.description
+    if (!title) return
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: title,
+      description: description || '',
+      author: {
+        '@type': 'Person',
+        name: 'Jiacheng',
+      },
+      publisher: {
+        '@type': 'Person',
+        name: 'Jiacheng',
+      },
+    }
+
+    pageData.frontmatter.head ??= []
+    pageData.frontmatter.head.push([
+      'script',
+      { type: 'application/ld+json' },
+      JSON.stringify(jsonLd),
+    ])
+  },
 })

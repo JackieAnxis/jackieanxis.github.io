@@ -1,5 +1,13 @@
 # CLAUDE.md：Agent 的指令本
 
+> 太长不看:
+>
+> **CLAUDE.md 是用户写给 Agent 的规矩**——被故意放在 User 消息而非 System 提示。
+>
+> 系统按本地/项目/用户/托管四层收集 CLAUDE.md，拼接后包装为 <system-reminder> 插入用户消息之前。故意不放 System 提示，因为训练阶段 System 优先级绝对高于 User，这种隔离可避免恶意 CLAUDE.md 劫持安全规则。
+>
+> 带 `paths` 的规则按需注入（Agent 读取匹配文件时才出现），避免不相关规则常驻上下文造成噪音。
+
 每个 Claude Code 项目根目录都有一个 `CLAUDE.md` 文件——它是用户写给 Agent 的**指令本**：编码标准、项目架构、工作流约定。启动时加载到上下文，Agent 尽力遵循。
 
 CLAUDE.md 是上下文而非强制配置——Claude 尽量遵循但不保证严格遵守。硬阻止某个操作需要用 PreToolUse hook（钩子系统，后面章节会讲）。

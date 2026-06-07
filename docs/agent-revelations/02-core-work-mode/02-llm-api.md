@@ -1,5 +1,13 @@
 # 与模型对话：LLM API 工作模式
 
+> 太长不看:
+>
+> **LLM API 是 Agent Loop 的"网络层"**——本质是 messages 与 tools 流的契约。
+>
+> 好的框架把各家协议差异（OpenAI vs Anthropic）收敛在适配层，让 Agent Loop 看不见这些细节——一次开发兼容多家模型。
+>
+> 其中流式不影响循环逻辑，只是把"观察"的时机从"等全部完成"提前到"边生成边看"，能更早发现错误或停止信号。
+
 上一节讲了 Agent Loop：一个 `while (true)` 循环，每一轮循环的背后其实就是**一次 LLM API 调用**。
 
 ## 请求是怎么组装的
@@ -36,7 +44,12 @@
 
 其中 `model` 和 `messages` 是必填的，其余都可以省略使用默认值。
 
-此外还有一些控制生成行为的参数：`top_p`（核采样概率阈值，默认一般是 1.0）、`stop`（遇到指定字符串时停止生成）、`presence_penalty` / `frequency_penalty`（惩罚重复内容，默认一般是 0）、`seed`（固定随机种子以复现输出）、`response_format`（强制输出 JSON 等特定格式）。这里的一些参数参数的具体含义可以参考 [Logits 是什么](../../llm-for-everyone/references/logits.md)，这里不展开。
+此外还有一些控制生成行为的参数：
+- `top_p`（核采样概率阈值，默认一般是 1.0）
+- `stop`（遇到指定字符串时停止生成）
+- `presence_penalty` / `frequency_penalty`（惩罚重复内容，默认一般是 0）
+- `seed`（固定随机种子以复现输出）
+- `response_format`（强制输出 JSON 等特定格式）
 
 注：`max_tokens` 作为通用“最大生成长度”已不够准确。Responses API 用 `max_output_tokens`；Chat Completions 的推理模型常用 `max_completion_tokens`；更早/非推理模型才继续用 `max_tokens`。
 

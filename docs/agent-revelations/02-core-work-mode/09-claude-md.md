@@ -4,7 +4,7 @@
 >
 > **CLAUDE.md 是用户写给 Agent 的规矩**——被故意放在 User 消息而非 System 提示。
 >
-> 系统按本地/项目/用户/托管四层收集 CLAUDE.md，拼接后包装为 <system-reminder> 插入用户消息之前。故意不放 System 提示，因为训练阶段 System 优先级绝对高于 User，这种隔离可避免恶意 CLAUDE.md 劫持安全规则。
+> 系统按本地/项目/用户/托管四层收集 CLAUDE.md，拼接后包装为 `<system-reminder>` 插入用户消息之前。故意不放 System 提示，因为训练阶段 System 优先级绝对高于 User，这种隔离可避免恶意 CLAUDE.md 劫持安全规则。
 >
 > 带 `paths` 的规则按需注入（Agent 读取匹配文件时才出现），避免不相关规则常驻上下文造成噪音。
 

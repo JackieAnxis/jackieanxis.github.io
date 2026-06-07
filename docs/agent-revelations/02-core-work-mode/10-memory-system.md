@@ -6,7 +6,7 @@ CLAUDE.md 是你主动写给 Agent 的指令。但指令是静态的：你只能
 
 ## 两套系统对比
 
-[上一章](./08-claude-md.md)讲了 CLAUDE.md，这里先做一个对比，建立直觉：
+[上一章](./09-claude-md.md)讲了 CLAUDE.md，这里先做一个对比，建立直觉：
 
 | | CLAUDE.md | 自动记忆 |
 |---|---|---|
@@ -174,7 +174,7 @@ IMPORTANT: this context may or may not be relevant to your tasks...
 
 检索过程中有一个**异步预取**优化：系统会在回答用户问题的同时，加载相关的记忆，当下次用户提问的时候，就可以把这段记忆附上作为参考。此外，目录扫描结果也会被缓存，仅当记忆目录内容变化时才重新扫描。
 
-检索结果的注入位置在近期发生了一次重要调整：自动记忆从 CLAUDE.md 前置管道（拼在消息列表最前面）移到了后置附件中（拼在消息列表末尾）。动机仍然是为了复用上下文缓存。详见[上下文：Agent 的记忆与视野](./11-context-overview.md)的 Delta 模式小节。
+检索结果的注入位置在近期发生了一次重要调整：自动记忆从 CLAUDE.md 前置管道（拼在消息列表最前面）移到了后置附件中（拼在消息列表末尾）。动机仍然是为了复用上下文缓存。详见[上下文：Agent 的记忆与视野](./12-context-overview.md)的 Delta 模式小节。
 
 记忆附带新鲜度标签：
 
@@ -211,4 +211,4 @@ IMPORTANT: this context may or may not be relevant to your tasks...
 
 更新前先检查现有记忆，不创建重复条目。"忘记 X"时删除文件和索引条目。
 
-本文介绍的即时提取是"随手记笔记"——每轮对话后即时提取。Agent 还有一套更深层的记忆整合机制——**AutoDream**，在积累足够素材后像人类睡眠一样批量整理记忆。详见 [AutoDream：Agent 的睡眠记忆整理](./10-auto-dream.md)。
+本文介绍的即时提取是"随手记笔记"——每轮对话后即时提取。Agent 还有一套更深层的记忆整合机制——**AutoDream**，在积累足够素材后像人类睡眠一样批量整理记忆。详见 [AutoDream：Agent 的睡眠记忆整理](./11-auto-dream.md)。

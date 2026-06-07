@@ -196,15 +196,15 @@ logs/YYYY/MM/YYYY-MM-DD.md
 - 外部系统的指针（看板、Linear 项目、Slack 频道）
 - 用户明确要求记住的任何内容
 
-这些规则和普通模式下[记忆系统](../02-core-work-mode/09-memory-system.md)"该记什么"的规则一致。区别不在于记什么，而在于**怎么记**——普通模式是即时提取到结构化的主题文件，KAIROS 是追加到按日期组织的日志文件。
+这些规则和普通模式下[记忆系统](../02-core-work-mode/10-memory-system.md)"该记什么"的规则一致。区别不在于记什么，而在于**怎么记**——普通模式是即时提取到结构化的主题文件，KAIROS 是追加到按日期组织的日志文件。
 
 写日志的是 **main thread**（主 Agent）自身——不是 fork 子 Agent，也不是系统后台任务。每轮 Agent Loop 中，模型根据自己的判断决定是否写入：收到 tick 时如果发现了值得记的事，就在工具调用中直接追加到日志文件。没有固定的定时机制，全靠系统提示塑造模型的行为倾向。这和普通模式下由权限受限的子 Agent 在每轮结束后自动提取不同——KAIROS 把"记什么"的决定权完全交给了工作中的主 Agent。
 
 ## Dream：睡眠时整理记忆
 
-[记忆系统](../02-core-work-mode/09-memory-system.md)介绍了普通模式下的即时记忆提取，[AutoDream](../02-core-work-mode/10-auto-dream.md) 介绍了普通模式下的后台深度整合。KAIROS 禁用了 AutoDream（源码中 `if (getKairosActive()) return false`），取而代之的是 **Dream**——通过 Cron 定时任务触发的 `/dream` 技能，由 fork 子 Agent 执行。
+[记忆系统](../02-core-work-mode/10-memory-system.md)介绍了普通模式下的即时记忆提取，[AutoDream](../02-core-work-mode/11-auto-dream.md) 介绍了普通模式下的后台深度整合。KAIROS 禁用了 AutoDream（源码中 `if (getKairosActive()) return false`），取而代之的是 **Dream**——通过 Cron 定时任务触发的 `/dream` 技能，由 fork 子 Agent 执行。
 
-Dream 和 AutoDream 共享同一套整合引擎：相同的四阶段流程（Orient → Gather → Consolidate → Prune）、相同的锁文件机制、相同的工具权限约束。AutoDream 的整合提示词最初就是从 KAIROS 模式中提取出来的。区别仅在触发方式——普通模式在会话结束时开始运行，KAIROS 由定时任务驱动。详见 AutoDream 章节中对[整合流程](../02-core-work-mode/10-auto-dream.md#四阶段整合流程)和[锁机制](../02-core-work-mode/10-auto-dream.md#锁机制)的详细描述。
+Dream 和 AutoDream 共享同一套整合引擎：相同的四阶段流程（Orient → Gather → Consolidate → Prune）、相同的锁文件机制、相同的工具权限约束。AutoDream 的整合提示词最初就是从 KAIROS 模式中提取出来的。区别仅在触发方式——普通模式在会话结束时开始运行，KAIROS 由定时任务驱动。详见 AutoDream 章节中对[整合流程](../02-core-work-mode/11-auto-dream.md#四阶段整合流程)和[锁机制](../02-core-work-mode/11-auto-dream.md#锁机制)的详细描述。
 
 为什么互斥？因为两者的记忆组织方式不同。AutoDream 假设"主题文件 + MEMORY.md 索引"的结构，整合提示词按照这个结构设计。而 KAIROS 使用 append-only 的每日日志，整合时需要先从日志中提炼，再写入结构化文件——流程不同，不能混用。
 

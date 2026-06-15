@@ -39,7 +39,7 @@ export default defineConfig({
     },
     nav: [
       { text: '首页', link: '/' },
-      { text: 'Agent 启示录', link: '/agent-revelations/01-concept-and-evolution/00-overview', activeMatch: '^/agent-revelations/' },
+      { text: 'Agent 启示录', link: '/agent-revelations/', activeMatch: '^/agent-revelations/' },
     ],
 
     sidebar: {
@@ -99,12 +99,6 @@ export default defineConfig({
       ],
       '/agent-revelations/': [
         {
-          text: 'Agent 的概念和演变',
-          items: [
-            { text: 'Agent 的概念和演变', link: '/agent-revelations/01-concept-and-evolution/00-overview' },
-          ],
-        },
-        {
           text: 'Agent 的核心工作模式',
           items: [
             { text: 'Agent Loop：Agent 的心跳', link: '/agent-revelations/02-core-work-mode/01-agent-loop' },
@@ -114,10 +108,10 @@ export default defineConfig({
             { text: '技能系统：Agent 的训练手册', link: '/agent-revelations/02-core-work-mode/05-skill-system' },
             { text: '任务系统：Agent 的行动蓝图', link: '/agent-revelations/02-core-work-mode/06-plan-task-system' },
             { text: 'Subagent 系统：多 Agents 合作', link: '/agent-revelations/02-core-work-mode/07-subagents' },
-            { text: '协调器模式：当 Agent 只负责指挥', link: '/agent-revelations/02-core-work-mode/08-coordinator' },
-            { text: 'CLAUDE.md：Agent 的指令本', link: '/agent-revelations/02-core-work-mode/09-claude-md' },
+            { text: '协调器模式：主进程只负责指挥', link: '/agent-revelations/02-core-work-mode/08-coordinator' },
+            { text: 'AGENTS.md：Agent 的指令本', link: '/agent-revelations/02-core-work-mode/09-agents-md' },
             { text: '记忆系统：Agent 的经验本', link: '/agent-revelations/02-core-work-mode/10-memory-system' },
-            { text: 'AutoDream：Agent 的睡眠记忆整理', link: '/agent-revelations/02-core-work-mode/11-auto-dream' },
+            { text: 'AutoDream：睡眠时的记忆整理', link: '/agent-revelations/02-core-work-mode/11-auto-dream' },
             { text: '上下文：Agent 的记忆与视野', link: '/agent-revelations/02-core-work-mode/12-context-overview' },
             { text: '上下文压缩：当窗口不够用时', link: '/agent-revelations/02-core-work-mode/13-context-management' },
           ],
@@ -125,7 +119,23 @@ export default defineConfig({
         {
           text: '周围组件',
           items: [
-            { text: 'MCP：AI 时代的 "USB-C 接口"', link: '/agent-revelations/03-peripheral-components/model-context-protocol' },
+            { text: 'Hooks：Agent 的生命线监控器', link: '/agent-revelations/03-peripheral-components/01-hooks' },
+            { text: 'MCP：AI 时代的 "USB-C 接口"', link: '/agent-revelations/03-peripheral-components/02-model-context-protocol' },
+          ],
+        },
+        {
+          text: '通往 AGI 之路',
+          items: [
+            { text: 'KAIROS：永不关机的 Agent', link: '/agent-revelations/04-the-way-to-agi/01-kairos' },
+            { text: 'Agent 团队：像真实团队一样协作', link: '/agent-revelations/04-the-way-to-agi/02-agent-teams' },
+          ],
+        },
+        {
+          text: '参考',
+          items: [
+            { text: 'Claude Code 系统提示词参考', link: '/agent-revelations/05-reference/01-claude-code-prompts' },
+            { text: 'LLM API 协议参考', link: '/agent-revelations/05-reference/02-llm-api-protocols' },
+            { text: 'Bash 工具权限检查详解', link: '/agent-revelations/05-reference/03-bash-tool-permissions' },
           ],
         },
       ],

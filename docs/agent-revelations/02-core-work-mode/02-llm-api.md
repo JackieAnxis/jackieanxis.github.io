@@ -1,79 +1,44 @@
 # 与模型对话：LLM API 工作模式
 
-> 太长不看:
+> **本章摘要**：
 >
-> **LLM API 是 Agent Loop 的"网络层"**——本质是 messages 与 tools 流的契约。
->
-> 好的框架把各家协议差异（OpenAI vs Anthropic）收敛在适配层，让 Agent Loop 看不见这些细节——一次开发兼容多家模型。
->
-> 其中流式不影响循环逻辑，只是把"观察"的时机从"等全部完成"提前到"边生成边看"，能更早发现错误或停止信号。
+> LLM API 是 Agent Loop 的"网络层"，本质上是消息历史与可用工具的契约。好的框架把各家协议差异收敛在适配层，让 Agent Loop 看不见这些细节。
 
-上一节讲了 Agent Loop：一个 `while (true)` 循环，每一轮循环的背后其实就是**一次 LLM API 调用**。
+上一节讲了 Agent Loop：一个不断重复的循环，**每一轮循环的背后就是一次 LLM API 调用**。模型读消息历史、给出下一步动作，这就是一次完整的"思考"。
 
-## 请求是怎么组装的
+本章不会深入 API 的具体设计上（想了解可以参考 [LLM API 协议参考](../05-reference/02-llm-api-protocols.md)），主要为了讲清楚几个核心问题：
+1. 请求-响应的本质是什么
+2. 消息历史怎么组织
+3. 工具调用怎么走通
+4. 各家协议为什么会有差异、为什么框架要加适配层。
 
-以 OpenAI 的 API 为例，一个请求的完整结构：
+## 一、请求-响应的本质
 
-```json
-{
-  "model": "gpt-4o",
-  "messages": [...],
-  "tools": [...],
-  "temperature": 0.7,
-  "max_tokens": 4096,
-  "stream": false
-}
-```
+无论哪家 LLM API，调用形态都可以抽象为：
 
-核心字段：
+- **请求**：把"到目前为止发生了什么"（历史消息）和"接下来你有哪些选择"（工具列表）告诉模型
+- **响应**：模型给出"我决定做什么"（可能是继续说话，也可能是调用某个工具）
 
-| 字段 | 作用 | 说明 |
-|------|------|------|
-| `model` | 用哪个模型 | 如 `gpt-4o`、`gpt-4o-mini` |
-| `messages` | 对话历史 | 告诉模型"之前说了什么" |
-| `tools` | 可用工具列表 | 告诉模型"你能做什么" |
+一个最小化的请求包含三件事：
 
-控制参数：
+1. **使用哪个模型**——模型版本决定能力边界和价格
+2. **到目前为止的对话历史**——messages 列表
+3. **可调用的工具列表**——tools，告诉模型"你能做什么"
 
-| 字段 | 作用 | 说明 |
-|------|------|------|
-| `temperature` | 回复的随机性 | 0 = 确定性强，1 = 更发散，默认 1 |
-| `max_tokens` | 最大生成长度 | 限制回复的 token 数 |
-| `stream` | 是否流式返回 | `true` 时用 SSE 增量推送，默认 `false` |
-| `n` | 生成几个候选回复 | 默认 1，响应中 `choices` 数组会有 n 个元素 |
+其他字段（temperature、max_tokens、是否流式）都是控制参数，决定模型的生成风格和长度。本章不深入这些参数的具体数值，因为它们因 API 而异、随版本调整。理解"消息历史 + 工具"这两个核心，就抓住了 LLM API 的灵魂。
 
-其中 `model` 和 `messages` 是必填的，其余都可以省略使用默认值。
+## 二、消息历史：模型唯一的记忆
 
-此外还有一些控制生成行为的参数：
-- `top_p`（核采样概率阈值，默认一般是 1.0）
-- `stop`（遇到指定字符串时停止生成）
-- `presence_penalty` / `frequency_penalty`（惩罚重复内容，默认一般是 0）
-- `seed`（固定随机种子以复现输出）
-- `response_format`（强制输出 JSON 等特定格式）
+模型本身没有持久记忆——它每次调用都从零开始读你传给它的消息列表。这意味着 **Agent 维护的"对话历史"就是模型的全部视野**：
 
-注：`max_tokens` 作为通用“最大生成长度”已不够准确。Responses API 用 `max_output_tokens`；Chat Completions 的推理模型常用 `max_completion_tokens`；更早/非推理模型才继续用 `max_tokens`。
+- 用户的原始任务是什么
+- 模型之前每一轮的思考、行动、观察
+- 工具返回了什么结果
 
-### messages：对话的角色交替
+消息历史通常是按时间顺序排列的列表，每条消息带有"角色"和"内容"。
+Agent Loop 每跑一轮，就往这个列表里追加一组"思考+行动+观察"，然后整体作为下一次请求的输入。
 
-每条消息有一个 `role`（角色），多种角色交替出现：
-
-```json
-{
-  "messages": [
-    { "role": "system", "content": "你是一个数据分析助手。" },
-    { "role": "user", "content": "帮我分析一下销售数据的趋势" },
-    {
-      "role": "assistant",
-      "content": null,
-      "tool_calls": [{
-        "id": "call_abc123",
-        "function": { "name": "read_file", "arguments": "{\"path\": \"/data/sales.csv\"}" }
-      }]
-    },
-    { "role": "tool", "tool_call_id": "call_abc123", "content": "日期,销售额\n2024-01,10000\n2024-02,12000" }
-  ]
-}
-```
+其中，角色的定义一般包含：
 
 | 角色 | 谁说的 | 作用 |
 |------|--------|------|
@@ -82,341 +47,100 @@
 | `assistant` | 模型 | 模型的回复/工具调用 |
 | `tool` | 工具执行结果 | 把工具的执行结果回传给模型 |
 
-注：o1 及之后模型推荐用 developer 替代 system 来表达系统角色
+**一段"三轮对话"的消息历史长这样**（用户提需求 → 模型调工具 → 工具回结果 → 模型总结）：
 
-用户提需求 → 模型调工具 → 工具返回结果，这正好对应 Agent Loop 的一轮循环。下一轮开始时，这段完整历史作为新的 `messages` 传入，模型就知道之前发生了什么。
-
-### tools：告诉模型"你能做什么"
-
-不声明工具，模型只能用文本回答。声明了工具，模型才有了"动手"的能力：
-
-```json
+```jsonc
 {
-  "tools": [
-    {
-      "type": "function",
-      "function": {
-        "name": "read_file",
-        "description": "读取指定路径的文件内容",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "path": { "type": "string", "description": "文件的绝对路径" }
-          },
-          "required": ["path"]
-        }
+  "messages": [
+    // 1. 用户发起请求
+    { "role": "user", "content": "统计 sales.csv 中 2024 年 Q1 的总销售额" },
+
+    // 2. 模型返回工具调用请求
+    { "role": "assistant", "content": null,
+      "tool_calls": [{ "id": "c1", "function": { "name": "read_file",
+        "arguments": "{\"path\": \"/data/sales.csv\"}" }}] },
+
+    // 3. 系统返回工具调用结果
+    { "role": "tool", "tool_call_id": "c1",
+      "content": "日期,销售额\n2024-01,10000\n2024-02,12000\n2024-03,15000" },
+
+    // 4. 模型根据结果给出回答
+    { "role": "assistant", "content": "Q1 总销售额 37000 元。" }
+  ],
+  
+  // 工具定义（下一节详细描述）
+  "tools": [{
+    "type": "function",
+    "function": {
+      "name": "read_file",
+      "description": "读取指定路径的文件内容",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "文件的绝对路径" }
+        },
+        "required": ["path"]
       }
     }
-  ]
-}
-```
-
-三个关键部分：
-
-- **name**：工具叫什么
-- **description**：工具做什么——模型靠这段描述决定什么时候该用
-- **parameters**：需要什么参数，用 JSON Schema 定义
-
-`tools` 字段定义了 Agent Loop 中"行动"步骤的全部可选动作。
-
-## 模型怎么回复：响应结构
-
-响应的核心在 `choices[0].message` 里。`choices` 是一个数组，因为请求时可以通过 `n` 参数让模型生成多个候选回复，但实际使用中几乎都取第一个。
-模型一般会有两种回复模式：
-
-### 文本回复
-
-```json
-{
-  "choices": [{
-    "message": {
-      "role": "assistant",
-      "content": "根据数据分析，2024年Q1销售额整体呈上升趋势..."
-    },
-    "finish_reason": "stop"
   }]
 }
 ```
 
-`finish_reason: "stop"` —— 模型给出了最终回答，Agent Loop 终止，任务完成。
+下一轮 Loop 启动时，Agent 把这四行原封不动作为 `messages` 字段发给模型，模型就知道之前发生了什么。
 
-### 工具调用
+> 这就是为什么"上下文管理"会成为 Agent 系统里极其重要的一章——消息列表越长，模型视野越广，但成本和延迟也越高。当列表超出模型的窗口限制时，Agent 必须主动决定"哪些要保留、哪些要压缩、哪些要丢弃"。
 
-```json
-{
-  "choices": [{
-    "message": {
-      "role": "assistant",
-      "content": null,
-      "tool_calls": [{
-        "id": "call_abc123",
-        "function": {
-          "name": "read_file",
-          "arguments": "{\"path\": \"/data/sales.csv\"}"
-        }
-      }]
-    },
-    "finish_reason": "tool_calls"
-  }]
-}
-```
+## 三、工具调用：让模型"动手"
 
-`finish_reason: "tool_calls"` —— 模型没结束，它在请求执行工具，Agent Loop 继续，执行工具、获取结果、再次调用模型。
+只会生成文本的模型是个聪明的聊天者，但不会影响世界。**工具调用**补上了"动手"的能力——它允许模型在响应中**声明要调用哪个工具、传什么参数**，由 Agent 框架负责真正执行，然后把结果回填到消息历史里。
 
-## 流式响应：一个字一个字地吐出来
+一个工具的描述通常包含三件事（详见上一小节的示例）：
 
-前面的响应都是"等模型全部生成完，再一次性返回"。但实际用 Agent 时，回复是一个字一个字蹦出来的——这就是流式响应（Streaming）。
+- **名称**：工具叫什么
+- **描述**：它是做什么的（给模型读的）
+- **参数 schema**：调用它需要什么参数、参数是什么类型
 
-### SSE：服务端主动推送
+模型在响应中**不直接执行工具**，而是**声明它要调用**。框架（系统）收到声明后才真正执行（权限检查、解析参数、调用底层 API），然后把执行结果以"工具消息"的身份塞回消息历史。这种"声明-执行-回填"的三段式，让权限和审计成为可能——这是后续"权限管线"章节的基础。
 
-流式响应用 SSE（Server-Sent Events）协议，HTTP 长连接，服务端不断推送 `data: {...}` 事件：
+工具调用是 Agent 区别于聊天机器人的关键能力，也是后续"工具系统""权限管线"等章节展开的原点。
 
-```
-data: {"choices":[{"delta":{"content":"根据"},"index":0}]}
+## 四、流式响应：边生成边观察
 
-data: {"choices":[{"delta":{"content":"数据"},"index":0}]}
+模型生成回复是一个 token 一个 token 进行的。**流式响应**允许服务端在生成过程中**边产出边推送**给客户端，而不是等全部生成完一次性返回（一般使用 SSE 协议，Server-Sent Events，不是本章的重点，不再展开详情）。
 
-data: {"choices":[{"delta":{"content":"分析"},"index":0}]}
+对 Agent Loop 来说，流式不影响"思考-行动-观察"的循环逻辑——循环的每一步仍然以"完整的一次 API 调用"为单位。但流式改变了**用户和框架能多早看到结果**：
 
-data: [DONE]
-```
+- 边生成边展示给用户，体感更流畅
+- 边生成边检测停止信号（比如模型决定调用工具），可以更早进入下一步
 
-完整响应里的 `message` 变成了 `delta`（增量），客户端自己拼接：
+> 一个常见的误解是把"流式"和"循环"混为一谈。它们是两件事：循环是 Agent 的工作节奏，流式是网络层的传输优化。Agent Loop 的每一步仍然以"一次完整调用"为单位，流式只是让这一次的中间过程可见。
 
-```
-"根据" + "数据" + "分析" → "根据数据分析"
-```
+## 五、协议差异：为什么会有不同
 
-工具调用参数也是增量传输的：
+不同 LLM 厂商的 API 协议不完全一样——消息结构、工具声明格式、流式事件类型、错误码、安全 Header 都不相同。
 
-```
-data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\"pa"}}]}}]}
+为什么会这样？因为 LLM 还在快速演化，协议也在随之调整。早期的协议没考虑工具调用，后来的协议加入多模态、再加入结构化输出、再加入提示词缓存……每家厂商的演进路径不同，最终协议形态也不同。
 
-data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"th\": "}}]}}]}
+这意味着**同一段 Agent 代码，往往不能直接跑在两个不同的 LLM 厂商上**——除非有适配层做转换。
 
-data: {"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"/data/sales.csv\"}"}}]}}]}
+## 六、适配层：框架的翻译官
 
-data: [DONE]
-```
+正因为协议有差异，一个成熟的 Agent 框架会做一件事：**把各家 API 收敛到框架内部的统一接口上**。
 
-拼合后：`{"path": "/data/sales.csv"}`，和非流式完全一样。
+> 框架写一次，模型换一家就跑——这是适配层的核心价值。
 
-流式不影响 Loop 逻辑，改变的是"观察"的时机：从"等全部完成再看"变成"边生成边看"。
+具体做法通常是：
 
-## Responses API：Chat Completion 的下一代
+- 框架内部定义"统一消息""统一工具"等抽象
+- 每个 LLM 厂商有一个适配器，负责把框架抽象翻译成该厂商的 API 格式
+- Agent Loop 只和框架的抽象打交道，从不直接碰任何厂商的私有字段
 
-2025 年 3 月，OpenAI 发布了 Responses API。它不是替代品，而是 Chat Completion 的演进。三个关键变化：
+这个设计让 Agent 系统的代码可以独立于具体模型演化。今天用 A 厂商，明天想换 B 厂商，改的是适配器，不是 Agent 逻辑。
 
-### 有状态对话：链式引用
+## 本章要点
 
-Chat Completion 要自己维护完整的 `messages` 数组。Responses API 用 `previous_response_id` 链式引用上一轮：
-
-```json
-{
-  "model": "gpt-4o",
-  "previous_response_id": "resp_abc123",
-  "input": "那化学奖呢？"
-}
-```
-
-服务端自己找回历史上下文，开发者不用管理消息数组。`previous_response_id` 来自上一次响应的 `id` 字段，注意它有有效期（目前 30 天），过期后历史不可找回。
-
-### 统一的输出结构
-
-Chat Completion 的文本在 `content`，工具调用在 `tool_calls`，两个字段。Responses API 统一到 `output` 数组：
-
-```json
-{
-  "output": [
-    {
-      "type": "message",
-      "content": [{ "type": "output_text", "text": "2024 年诺贝尔物理学奖颁给了..." }]
-    },
-    {
-      "type": "web_search_call",
-      "id": "ws_abc123",
-      "status": "completed"
-    }
-  ]
-}
-```
-
-### 预声明工具：不用自己写工具定义
-
-Chat Completion 里每个工具都要自己写完整的 `function` 声明（name、description、parameters）。Responses API 提供了预声明工具，OpenAI 已经帮你定义好了，启用即可：
-
-```json
-{
-  "model": "gpt-4o",
-  "tools": [{ "type": "web_search_preview" }],
-  "input": "2024 年诺贝尔物理学奖颁给了谁？"
-}
-```
-
-注意，"预声明"不是"默认开启"——你仍然需要在 `tools` 里显式启用，告诉模型"这次调用你可以用搜索"。只是不需要自己写几十行 JSON Schema 了。
-
-类似地还有 `file_search`（搜索你上传到 OpenAI 云端的文件）、`code_interpreter`（在沙箱中执行代码）等。
-
-## Anthropic Messages API：同工异曲的另一套协议
-
-前面所有示例都以 OpenAI 为蓝本。但 Anthropic（Claude 的开发商）选择了一条不同的路——没有兼容 OpenAI，而是设计了自己的 Messages API。两家做的是同一件事，但协议细节几乎处处不同。理解这些差异，是对接不同模型时的第一道门槛。
-
-### system prompt：顶层字段 vs messages 里的角色
-
-OpenAI 把 system prompt 放在 `messages` 数组里，当作第一条消息：
-
-```json
-{
-  "messages": [
-    { "role": "system", "content": "你是一个数据分析助手。" },
-    { "role": "user", "content": "帮我分析一下销售数据" }
-  ]
-}
-```
-
-Anthropic 把它抽出来，作为独立的顶层字段 `system`：
-
-```json
-{
-  "system": "你是一个数据分析助手。",
-  "messages": [
-    { "role": "user", "content": "帮我分析一下销售数据" }
-  ]
-}
-```
-
-`messages` 里只有 `user` 和 `assistant` 两种角色，不接受 `system`。
-
-
-### 工具调用：两个字段 vs content block
-
-OpenAI 把工具调用放在 `tool_calls` 字段，工具结果用 `role: "tool"` 消息回传：
-
-```json
-{
-  "role": "assistant",
-  "content": null,
-  "tool_calls": [{
-    "id": "call_abc123",
-    "function": { "name": "read_file", "arguments": "{\"path\": \"/data/sales.csv\"}" }
-  }]
-}
-```
-
-```json
-{ "role": "tool", "tool_call_id": "call_abc123", "content": "日期,销售额\n2024-01,10000" }
-```
-
-Anthropic 把工具调用作为 `content` 数组里的 `tool_use` 块，工具结果作为 `tool_result` 块嵌在 `user` 消息里：
-
-```json
-{
-  "role": "assistant",
-  "content": [
-    {
-      "type": "tool_use",
-      "id": "toolu_abc123",
-      "name": "read_file",
-      "input": { "path": "/data/sales.csv" }
-    }
-  ]
-}
-```
-
-```json
-{
-  "role": "user",
-  "content": [
-    {
-      "type": "tool_result",
-      "tool_use_id": "toolu_abc123",
-      "content": "日期,销售额\n2024-01,10000"
-    }
-  ]
-}
-```
-
-关键区别：
-- **位置**：OpenAI 用独立字段 `tool_calls`，Anthropic 塞进 `content` 数组
-- **参数格式**：OpenAI 的 `arguments` 是 JSON 字符串，Anthropic 的 `input` 是 JSON 对象（不用再 parse）
-- **工具结果的角色**：OpenAI 用 `role: "tool"`，Anthropic 用 `role: "user"`（工具结果被视为用户侧的输入）
-- **关联 ID 字段名**：`tool_call_id` vs `tool_use_id`
-
-### 响应结构：choices vs content 数组
-
-OpenAI 的响应包在 `choices` 数组里：
-
-```json
-{
-  "choices": [{
-    "message": { "role": "assistant", "content": "分析结果..." },
-    "finish_reason": "stop"
-  }]
-}
-```
-
-Anthropic 的响应直接是扁平结构，`content` 是内容块数组：
-
-```json
-{
-  "content": [{ "type": "text", "text": "分析结果..." }],
-  "stop_reason": "end_turn"
-}
-```
-
-对应的结束标记也不同：OpenAI 是 `finish_reason: "stop"` / `"tool_calls"`，Anthropic 是 `stop_reason: "end_turn"` / `"tool_use"`。
-
-### 流式响应：delta 增量 vs 事件类型
-
-OpenAI 的流式用统一的 `data:` 行，每个 chunk 都是 `delta`：
-
-```
-data: {"choices":[{"delta":{"content":"根据"},"index":0}]}
-data: {"choices":[{"delta":{"content":"数据"},"index":0}]}
-data: [DONE]
-```
-
-Anthropic 的流式定义了一套更细粒度的事件类型，每个事件有 `event:` 和 `data:` 两行：
-
-```
-event: message_start
-data: {"type":"message_start","message":{"role":"assistant","content":[]}}
-
-event: content_block_delta
-data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"根据"}}
-
-event: content_block_delta
-data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"数据"}}
-
-event: message_stop
-data: {"type":"message_stop"}
-```
-
-OpenAI 只有一种 chunk 格式，靠 `delta` 里的字段区分内容；Anthropic 用事件类型（`message_start`、`content_block_start`、`content_block_delta`、`content_block_stop`、`message_delta`、`message_stop`）明确标记每个阶段，解析逻辑更清晰但更复杂。
-
-### 认证方式
-
-| | OpenAI | Anthropic |
-|---|---|---|
-| Header | `Authorization: Bearer <key>` | `x-api-key: <key>` |
-| 版本控制 | 无 | `anthropic-version: 2023-06-01` |
-
-Anthropic 要求在请求头中指定 API 版本，这样可以在不破坏旧客户端的情况下迭代协议。
-
-### 一张表总结核心差异
-
-| 对比项 | OpenAI Chat Completions | Anthropic Messages |
-|--------|------------------------|--------------------|
-| 端点 | `POST /v1/chat/completions` | `POST /v1/messages` |
-| system prompt | `messages` 中 `role: "system"` | 顶层 `system` 字段 |
-| 工具调用位置 | `tool_calls` 字段 | `content` 中的 `tool_use` 块 |
-| 工具参数格式 | JSON 字符串 | JSON 对象 |
-| 工具结果角色 | `role: "tool"` | `role: "user"` + `tool_result` 块 |
-| 响应结构 | `choices[].message` | 扁平 `content[]` |
-| 结束标记 | `finish_reason: "stop"` | `stop_reason: "end_turn"` |
-| 工具结束标记 | `finish_reason: "tool_calls"` | `stop_reason: "tool_use"` |
-| 流式格式 | 统一 `delta` chunk | 分类型事件（`content_block_delta` 等） |
-| 认证头 | `Authorization: Bearer` | `x-api-key` |
-| API 版本 | 无 | `anthropic-version` 头 |
-
-这些差异在 Agent Loop 的抽象层之下——无论底层调的是 OpenAI 还是 Anthropic，循环的"思考→行动→观察"逻辑不变。变的是 HTTP 层的契约：请求怎么拼、响应怎么拆。这也是为什么很多 Agent 框架会在内部统一一种消息格式，在适配层做转换，让核心循环不用关心具体调用的是哪家的模型。
+- LLM API 的本质是**消息历史 + 可用工具的契约**
+- 模型没有持久记忆，**消息列表就是它的全部视野**
+- 工具调用是"声明-执行-回填"三段式，给权限和审计留出空间
+- 流式是网络层优化，**不影响 Agent Loop 的循环结构**
+- 协议差异是历史演进的产物，**适配层让 Agent 代码与具体模型解耦**

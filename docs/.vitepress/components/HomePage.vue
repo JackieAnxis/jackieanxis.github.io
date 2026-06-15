@@ -49,11 +49,13 @@
         </div>
 
         <aside class="gallery-detail" aria-live="polite">
-          <img
-            class="gallery-cover"
-            :src="activeBook.coverUrl"
-            :alt="activeBook.coverAlt"
-          >
+          <a class="gallery-cover-link" :href="activeBook.href">
+            <img
+              class="gallery-cover"
+              :src="activeBook.coverUrl"
+              :alt="activeBook.coverAlt"
+            >
+          </a>
           <div class="gallery-copy">
             <h1 id="gallery-title">{{ activeBook.title }}</h1>
             <p class="gallery-subtitle">{{ activeBook.subtitle }}</p>
@@ -110,7 +112,7 @@ const featuredBooks = [
     title: "Agent 启示录",
     subtitle: "Agent Revelations",
     description: "以 Claude Code 为例理解智能体原理，拆解智能体架构、工具调用、记忆与上下文，以及规划和执行如何共同构成可持续工作的系统。",
-    href: "/agent-revelations/01-concept-and-evolution/00-overview",
+    href: "/agent-revelations/",
     coverUrl: "/assets/agent-revelations-cover.png",
     coverAlt: "《Agent 启示录》封面",
     spineUrl: "/assets/agent-revelations-spine.png",

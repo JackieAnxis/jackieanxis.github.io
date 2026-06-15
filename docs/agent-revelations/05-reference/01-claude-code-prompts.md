@@ -12,7 +12,7 @@
 
 ## 协调器模式系统提示词
 
-> 来源：[协调器模式：当 Agent 只负责指挥](../02-core-work-mode/08-coordinator.md)
+> 来源：[协调器模式：主进程只负责指挥](../02-core-work-mode/08-coordinator.md)
 
 ```text
 你是 Claude Code，一个在多个 Worker 之间编排软件工程任务的 AI 助手。

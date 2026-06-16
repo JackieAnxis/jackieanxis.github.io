@@ -4,6 +4,8 @@
 >
 > Subagent 的核心价值是**隔离与专业化**——独立上下文窗口让子任务不污染主对话，不同 Subagent 可配不同模型/工具/权限。每个 Subagent 拥有独立对话历史和 token 预算，主 Agent 只接收最终结果。
 
+![subagents](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/subagents.png)
+
 Subagent 系统提供**上下文隔离、并行执行、专业化分工**的能力——主 Agent 把复杂任务拆解为独立的子任务，交给不同的 Subagent 并发完成。
 
 > **注**：本文讲的是 "Subagent 通用机制"。"协调器模式"（一种特定运行模式）和"Agent Teams"（团队协作）分别在后续章节单独介绍。
@@ -18,8 +20,6 @@ Subagent 系统提供**上下文隔离、并行执行、专业化分工**的能�
 | Token 成本高 | 子任务可用更小的模型或受限工具集 |
 
 主 Agent 发出指令，Subagent 自主执行并返回摘要。主对话的上下文保持干净，只保留最终决策。
-
-![Subagent 并行委托架构](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-28/subagent-parallel-architecture.svg)
 
 ## 什么是 Subagent
 
@@ -113,7 +113,6 @@ Subagent 的工具池**不等于**父 Agent 的工具池。框架通过几层过
 
 Subagent 从创建到资源清理经历完整的状态流转：
 
-![Subagent 生命周期](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-28/subagent-lifecycle-cn-draft.png)
 
 | 阶段 | 关键操作 |
 |------|----------|

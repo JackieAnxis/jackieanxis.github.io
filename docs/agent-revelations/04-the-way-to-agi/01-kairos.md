@@ -4,6 +4,8 @@
 >
 > KAIROS 是 Agent 从"工具"到"队友"的范式切换——让 Agent 在你不在时继续推进任务。tick 机制让 Agent 自己决定休眠节奏，更接近"有经验的同事"的节奏。
 
+![kairos-vs-normal-mode](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/kairos-vs-normal-mode.png)
+
 你在终端里让 Claude Code 重构一个模块，它开始了——读文件、分析依赖、逐个修改、跑测试。然后你合上电脑下班了。
 
 第二天早上打开终端，发现它不仅完成了重构，还修好了跑测试时发现的两个边界 bug，把重构的决策理由写进了每日日志，甚至在你睡觉的时候"做了一个梦"——把这次重构的经验整理成了一条持久记忆。

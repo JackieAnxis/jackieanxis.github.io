@@ -4,6 +4,8 @@
 >
 > LLM API 是 Agent Loop 的"网络层"，本质上是消息历史与可用工具的契约。好的框架把各家协议差异收敛在适配层，让 Agent Loop 看不见这些细节。
 
+![llm-api-sequence](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/llm-api-sequence.png)
+
 上一节讲了 Agent Loop：一个不断重复的循环，**每一轮循环的背后就是一次 LLM API 调用**。模型读消息历史、给出下一步动作，这就是一次完整的"思考"。
 
 本章不会深入 API 的具体设计上（想了解可以参考 [LLM API 协议参考](../05-reference/02-llm-api-protocols.md)），主要为了讲清楚几个核心问题：

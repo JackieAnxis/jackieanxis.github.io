@@ -4,6 +4,8 @@
 >
 > 记忆系统是 Agent 自动积累的"经验本"，与 AGENTS.md 互补——AGENTS.md 是静态规矩，记忆是跨会话积累的经验。记忆按类型（用户/反馈/项目/参考）分类，按相关性检索注入。**强制记录 Why 和 How to apply**——知道为什么才能在未来判断边界情况。
 
+![memory-system](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/memory-system.png)
+
 AGENTS.md 是你主动写给 Agent 的指令。但指令是静态的：你只能预先写好，没人能把每件小事都写进 AGENTS.md。你的偏好、临时的团队决策、某个需要特殊处理的遗留接口——这些不成文的规矩，做错了照样出问题。
 
 **记忆系统填补了这个空白**。它让 Agent 在对话中自动积累经验，跨会话持续演进。

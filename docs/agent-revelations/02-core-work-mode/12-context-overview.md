@@ -10,6 +10,8 @@
 
 ## 开始之前：使用缓存来降低模型成本
 
+![cache-matching](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/context-overview-cache-matching.png)
+
 在进入上下文的细节之前，先讲一个贯穿全文的底层机制——**提示缓存（prompt caching）**。
 
 ### 为什么要缓存
@@ -44,6 +46,9 @@
 
 
 ## 上下文全景：一次 API 调用发送了什么
+
+![context-overview](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/context-overview.png)
+
 
 每次 API 请求的上下文由三大块组成：
 

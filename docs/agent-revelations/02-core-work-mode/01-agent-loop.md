@@ -4,7 +4,7 @@
 >
 > Agent 的本质是一个不断重复的循环：思考 → 行动 → 观察。模型在迭代中消化真实任务的不确定性，直到任务完成或需要停下为止。理解这个循环，是理解 Agent 全部子系统的基础。
 
-![Agent Loop 的四步循环：思考、行动、观察、推进](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-05/agent-loop-flow.svg)
+![agent loop](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/agent-loop.png)
 
 ## 什么让 Agent 从"一问一答"变成"持续推进"
 

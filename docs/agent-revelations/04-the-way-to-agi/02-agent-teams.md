@@ -4,6 +4,8 @@
 >
 > Agent Teams 让多个 Agent **持续在线、互相通信**——核心是"水平通信"。与协调器模式不同，Agent Teams 不是限制自由度，而是**增加协调层**——Lead 想亲力亲为时随时可以动手。队友通过文件收件箱通信，权限冒泡让队友没有自己的终端，避免用户在多个 teammate 之间来回切换。
 
+![agent-teams](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/agent-teams.png)
+
 [Subagent 系统](../02-core-work-mode/07-subagents.md)让 Agent 能把任务拆分给多个子 Agent 并行执行。但子 Agent 有一个根本限制：**只能汇报结果，不能持续对话**。叫来、干完、走人——像临时工。这带来了几个核心问题：
 
 - **信息漏斗，多次传递导致信息丢失**： Subagents 之间是“老死不相往来”的。它们只能单线向主代理汇报，无法互相沟通对齐，效率极低，信息容易被过滤，不同 agent 之间容易产生认知冲突而"左右互搏"。

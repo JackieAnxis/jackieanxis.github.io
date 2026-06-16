@@ -10,8 +10,6 @@
 
 如果把 Agent Loop 比作 Agent 的心跳，那工具系统就是它的双手。没有手，Agent 只能说话；有了手，Agent 才能动手。
 
-![工具系统是 Agent 的双手](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-05-25/tool-system-hands.png)
-
 ## Agent 都有哪些"手"
 
 一个 Agent 通常需要这些类别的工具：
@@ -59,6 +57,8 @@
 | 状态检查 | 工具自身 | 根据当前环境判断工具是否可用 |
 
 任何一层独立拦截即可移除工具。**纵深防御**的价值在于：即使某一层失守，下一层仍能拦截。
+
+![tool-filter-pipeline](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/tool-filter-pipeline.png)
 
 ### Fail-Closed：贯穿管线的安全哲学
 

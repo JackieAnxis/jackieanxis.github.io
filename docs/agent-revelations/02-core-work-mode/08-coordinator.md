@@ -4,6 +4,8 @@
 >
 > 协调器模式是 Subagent 系统的一种"极端分工"——剥夺主 Agent 的全部动手能力，迫使它只做综合与编排。Subagent (Worker) 执行具体任务，并互相共享研究发现。
 
+![coordinator](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/coordinator.png)
+
 普通模式下，Main Agent 既能思考又能动手——读文件、写代码、跑测试、做决策，一身多职。大多数场景够用，但项目规模一旦膨胀，单个 Agent 同时承担研究、架构、编码、验证，注意力被严重稀释。
 
 协调器模式给出一个**极端解法**：让主 Agent 彻底放弃动手能力，只保留指挥权，变成协调器（Coordinator）。它不能读文件、不能写代码、不能执行命令——唯一能做的是拆任务给 Subagent (也即 Worker)，综合结果、向用户汇报。

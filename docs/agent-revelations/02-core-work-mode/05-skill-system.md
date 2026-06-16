@@ -34,6 +34,8 @@
 
 ## 技能的加载方式
 
+![skill-loader](https://jackie-image.oss-cn-hangzhou.aliyuncs.com/2026-06-16/skill-loader.png)
+
 在扫描各来源目录，合并去重后，技能按是否带触发条件分成两类：
 
 - **无条件技能**：立即可用，注入系统提示

@@ -18,3 +18,8 @@ llm-for-everyone 项目是作为一个科普性质的电子书，目的是为了
 ## agent-revelations
 
 agent-revelations 也是一本电子书，面向一些使用过 claude code 的程序员来介绍 Agent 的原理（以 claude code 为例）。 分析 external/cc-haha 的代码 和 external/claude-code-docs 的文档 来配合撰写，仅讲原理，禁止直接引用代码（未阅读过代码的读者会容易迷失），尽可能少讲操作方式（这样会使本文档看着像用户指南，其实用户可以看官方文档来了解）。
+
+# Github 相关
+
+推送 Github 前必须检查：
+- [ ] 如果本次提交更新了文章内容，请检查各书籍的 sidebar 配置是否完成了更新？
